@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Program</string>
+    <string name="bluetooth_lack">Urządzenie nie posiada Bluetooth</string>
+    <string name="bonded">Połączono</string>
+    <string name="bonding">Łączenie</string>
+    <string name="bond_none">Nie połączono</string>
+</resources>

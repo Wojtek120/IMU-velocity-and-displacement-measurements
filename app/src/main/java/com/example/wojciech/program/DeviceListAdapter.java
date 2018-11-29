@@ -1,0 +1,64 @@
+package com.example.wojciech.program;
+
+import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
+{
+    private LayoutInflater mLayoutInflater;
+    private ArrayList<BluetoothDevice> mDevices;
+    private int mViewResourceId;
+
+    /**
+     * Konstruktor TODO opisac to jest w wyszukiwaniu urzadzenpotrzebne w mBroadcastReceiver3
+     * @param context
+     * @param tvResourceId
+     * @param devices
+     */
+    public DeviceListAdapter(Context context, int tvResourceId, ArrayList<BluetoothDevice> devices)
+    {
+        super(context, tvResourceId, devices);
+        this.mDevices = devices;
+        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mViewResourceId = tvResourceId;
+    }
+
+    /**
+     * TODO OPISAC j.w.
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
+        convertView = mLayoutInflater.inflate(mViewResourceId, null); //TODO ogarnac ten szit
+
+        BluetoothDevice device = mDevices.get(position);
+
+        if(device != null)
+        {
+            TextView deviceName = convertView.findViewById(R.id.tvDeviceName); //TODO to nie jest raczej finalna lista
+            TextView deviceAddress = convertView.findViewById(R.id.tvDeviceAddress); //TODO jw
+
+            if (deviceName != null)
+            {
+                deviceName.setText(device.getName());
+            }
+
+            if (deviceAddress != null)
+            {
+                deviceAddress.setText(device.getAddress());
+            }
+        }
+
+        return convertView;
+    }
+}
