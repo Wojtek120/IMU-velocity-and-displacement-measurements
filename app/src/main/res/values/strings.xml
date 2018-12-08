@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name">Program</string>
     <string name="bluetooth_lack">Urządzenie nie posiada Bluetooth</string>
-    <string name="bonded">Połączono</string>
-    <string name="bonding">Łączenie</string>
-    <string name="bond_none">Nie połączono</string>
+    <string name="bonded">Sparowano</string>
+    <string name="bonding">Parowanie</string>
+    <string name="bond_none">Nie sparowano</string>
+    <string name="errorCheckDevices">Nie udalo się przesłać danych przez bluetooth, sprawdz połączenie</string>
+    <string name="found_device">Znaleziono urządzenie</string>
+    <string name="connected">Połączono</string>
+    <string name="search_ended">Zakończono szukanie</string>
+    <string name="disconnecting">Rozłączanie</string>
+    <string name="disconnected">Rozłączono</string>
+    <string name="connecting">Łączenie</string>
 </resources>

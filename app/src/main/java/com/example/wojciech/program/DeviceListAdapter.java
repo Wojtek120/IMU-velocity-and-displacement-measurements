@@ -18,9 +18,9 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
 
     /**
      * Konstruktor TODO opisac to jest w wyszukiwaniu urzadzenpotrzebne w mBroadcastReceiver3
-     * @param context
-     * @param tvResourceId
-     * @param devices
+     * @param context - kontekst
+     * @param tvResourceId - wskaznik (?) na plik xml gdzie wpisujemy do niego nazwe i adres urzadzenia
+     * @param devices - lista z urzadzeniami bluetooth
      */
     public DeviceListAdapter(Context context, int tvResourceId, ArrayList<BluetoothDevice> devices)
     {

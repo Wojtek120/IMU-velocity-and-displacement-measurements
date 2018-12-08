@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onDestroy();
         BT.unregisterBroadcastReceiver();
+        BT.closeBluetoothSocket();
     }
 
 
@@ -55,6 +57,13 @@ public class MainActivity extends AppCompatActivity
         BT.discoverDevices();
     }
 
+    //testy
+    public void diodeOn(View v)
+    {
+        EditText et = findViewById(R.id.editText);
+        String s = et.getText().toString();
+        BT.sendData(s);
+    }
 
 
 
