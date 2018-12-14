@@ -45,7 +45,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //identyfikator potrzebny do stworzenia polaczenia
     private BluetoothDevice mmDevice; //urzadzenie wykorzytstywane w watku
     private ConnectionThread mConnectionThread;
-    private ConnectedThread mConnectedThread;
+    private ConnectedThread mConnectedThread = null;
 
 
     /**
@@ -187,6 +187,12 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
 
 
 
+
+
+
+
+
+
     /**
      * BroadcastReceiver, ktory nasluchuje bluetooth broadcasts
      */
@@ -219,6 +225,12 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     };
 
 
+
+
+
+
+
+
     /**
      * Konstruktor - przypisuje do zmiennej mContext context i tworzy mActivity
      *
@@ -230,6 +242,18 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         mActivity = getActivity(mContext);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        //sledzenie zmiany stanu Bluetooth do mBroadcastReceiver1
+        IntentFilter BluetoothIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        mContext.registerReceiver(mBroadcastReceiver1, BluetoothIntent);
+
+        //sledzenie zmiany stanu do mBroadcastReceiver2 - obsluguje discoverable
+        IntentFilter intentFilter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
+        mContext.registerReceiver(mBroadcastReceiver2, intentFilter);
+
+        //Broadcast od wyszukiwania urzadzen
+        IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        mContext.registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
 
         //Bradcast kiedy zmieni sie stan bond np. parowanie
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
@@ -250,6 +274,12 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     }
 
 
+
+
+
+
+
+
     /**
      * Funkcja wlaczajaca Bluetooth
      */
@@ -267,13 +297,15 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
             if (mActivity != null)
                 mActivity.startActivityForResult(turnBluetoothOn, 1);
 
-
-            //sledzenie zmiany stanu Bluetooth do mBroadcastReceiver1
-            IntentFilter BluetoothIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            mContext.registerReceiver(mBroadcastReceiver1, BluetoothIntent);
         }
 
     }
+
+
+
+
+
+
 
 
     /**
@@ -286,10 +318,14 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 30);
         mContext.startActivity(discoverableIntent);
 
-        //sledzenie zmiany stanu do mBroadcastReceiver2
-        IntentFilter intentFilter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-        mContext.registerReceiver(mBroadcastReceiver2, intentFilter);
+
     }
+
+
+
+
+
+
 
 
     /**
@@ -307,8 +343,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
 
             //zacznij skanowac ponownie
             mBluetoothAdapter.startDiscovery();
-            IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-            mContext.registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+
         } else
         {
             //sprawdz pozwolenia
@@ -316,10 +351,15 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
 
             //zacznij skanowac
             mBluetoothAdapter.startDiscovery();
-            IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-            mContext.registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+
         }
     }
+
+
+
+
+
+
 
 
     /**
@@ -341,6 +381,12 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     }
 
 
+
+
+
+
+
+
     /**
      * Funkcja wyswietlajaca wysrodkowana wiadomosc
      *
@@ -353,6 +399,13 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         if (vi != null) vi.setGravity(Gravity.CENTER);
         toast.show();
     }
+
+
+
+
+
+
+
 
 
     /**
@@ -381,6 +434,11 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     }
 
 
+
+
+
+
+
     /**
      * Zwolnij BroadcastReceiver
      */
@@ -393,6 +451,11 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         mContext.unregisterReceiver(mBroadcastReceiver5);
     }
 
+
+
+
+
+
     /**
      * Zamknij bluetooth socket
      */
@@ -400,12 +463,18 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     {
         try
         {
-            mBluetoothSocket.close();
+            if(mBluetoothSocket != null)
+                mBluetoothSocket.close();
         } catch (IOException e2)
         {
             Log.e("SetConnection", "ERROR - Failed to close Bluetooth socket");
         }
     }
+
+
+
+
+
 
 
     /**
@@ -427,30 +496,50 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         //Paruj urzadzenie TODO Dzia;a tylko na nowszych urzadzeniach, sprawdz czy mozna inaczej
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
         {
-            mBluetoothDevices.get(i).createBond();
-            SetConnection(mBluetoothDevices.get(i));
+            startClient(mBluetoothDevices.get(i));
         }
     }
 
 
+
+
+
+
+
     /**
-     * Funkcja tworzaca polaczenie z urzadzeniem bluetooth
-     * @param bluetoothDevice - urzadzenie z ktorym ma utworzyc sie polaczenie
-     */
-    private void SetConnection(BluetoothDevice bluetoothDevice)
+     * Uruchamia watek ConnectionThread do nawiazania polaczenia
+     * @see ConnectionThread
+     **/
+    private void startClient(BluetoothDevice device)
     {
-        startClient(bluetoothDevice);
+        Log.d("startClient", "startClient: Started.");
+
+        //initprogress dialog
+        //TODO mProgressDialog = ProgressDialog.show(mContext, "Connecting Bluetooth", "Please Wait...", true);
+
+        mConnectionThread = new ConnectionThread(device);
+        mConnectionThread.start();
     }
 
 
+
+
+
+
+
     /**
-     * TODO opisz to watek odpiwiedzialny za ustanawianie polaczenia
+     * Watek odpiwiedzialny za ustanawianie polaczenia, w nim jest tworzony socket a następnie uruchamiana funkcja connected
+     * @see #connected(BluetoothSocket, BluetoothDevice)
      */
     private class ConnectionThread extends Thread
     {
         private BluetoothSocket mmBluetoothSocket;
 
 
+        /**
+         * konstruktor
+         * @param device - urzadzenie, z ktoryma ma zostac nawiazane polaczenie
+         */
         public ConnectionThread(BluetoothDevice device)
         {
             Log.i("ConnectedThread", "Uruchomiono");
@@ -459,6 +548,10 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         }
 
 
+        /**
+         * W tej funkcji watek tworzy polaczenie, a nastepnie uruchamia funkcje connected
+         * @see BluetoothConnection#connected(BluetoothSocket, BluetoothDevice)
+         */
         public void run()
         {
             BluetoothSocket tmp = null;
@@ -505,23 +598,26 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     }
 
 
+
+
+
     /**
-     * Uruchamia ConnectThread do nawiazania polaczenia
-     **/
-    public void startClient(BluetoothDevice device)
+     * Uruchamia watek do zarzadzania polaczeniem i wysylania danych
+     */
+    private void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice)
     {
-        Log.d("startClient", "startClient: Started.");
-
-        //initprogress dialog
-        //TODO mProgressDialog = ProgressDialog.show(mContext, "Connecting Bluetooth", "Please Wait...", true);
-
-        mConnectionThread = new ConnectionThread(device);
-        mConnectionThread.start();
+        Log.d("connected", "connected: Starting.");
+        mConnectedThread = new ConnectedThread(mmSocket);
+        mConnectedThread.start();
     }
 
 
+
+
+
+
     /**
-     * ConnectedThread odpowiedzialny za utrzymanie polaczenia, wysylanie danych i ich odbieranie
+     * Watek odpowiedzialny za utrzymanie polaczenia, wysylanie danych i ich odbieranie
      **/
     private class ConnectedThread extends Thread
     {
@@ -529,6 +625,11 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
+
+        /**
+         * Konstruktor
+         * @param socket - socket ktory ma zostac obsluzonu
+         */
         public ConnectedThread(BluetoothSocket socket)
         {
             Log.d("ConnectedThread", "ConnectedThread: Starting.");
@@ -560,13 +661,17 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
             mmOutStream = tmpOut;
         }
 
+
+        /**
+         * Obsluga komunikacij
+         */
         public void run()
         {
             byte[] buffer = new byte[1024];  // buffer dla stream
 
             int bytes; // bytes zwrocony przez read()
 
-            // Nasluchuj do InputStream until az exception wystapi
+            // Nasluchuj do InputStream az exception wystapi
             while (true)
             {
                 //Czytaj z InputStream
@@ -583,7 +688,11 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
             }
         }
 
-        //Funkcja wysylajaca dane
+
+        /**
+         * Funkcja wysylajaca dane
+         * @param bytes - dane do wyslania
+         */
         public void write(byte[] bytes)
         {
             String text = new String(bytes, Charset.defaultCharset());
@@ -597,7 +706,9 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
             }
         }
 
-        //Zamkniecie polaczenia
+        /**
+         * Funkcja zamykajaca polaczenie
+         */
         public void cancel()
         {
             try
@@ -611,18 +722,10 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
 
 
 
-    /**
-     * Uruchamia thread do zarzadzania polaczeniem i wysylania danych
-     */
-    private void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice)
-    {
-        Log.d("connected", "connected: Starting.");
-        mConnectedThread = new ConnectedThread(mmSocket);
-        mConnectedThread.start();
-    }
+
 
     /**
-     * Napisz do ConnectedThread
+     * Funkcja wysylajaca wiadomosc, piszaca do ConnectedThread
      *
      * @param message dane do napisania
      * @see ConnectedThread#write(byte[])
@@ -633,30 +736,9 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         //string to byte
         byte[] messageBuffer = message.getBytes();
         //napisz
-        mConnectedThread.write(messageBuffer);
+        if(mConnectedThread != null)
+            mConnectedThread.write(messageBuffer);
     }
-
-
-    /**
-     * Przeslij dane
-     * @param message - string z wiadomoscia do przeslania
-     */
-    /*public void sendData(String message)
-    {
-        byte[] messageBuffer = message.getBytes();
-
-        try
-        {
-            //proba przeslania danych do output steram
-            mOutputStream.write(messageBuffer);
-        } catch (IOException e)
-        {
-            //jesli proba sie nie powiodla to prawdopodbnie przez brak polaczenia
-            Log.e("SetConnection", "ERROR - Device not found");
-            showMessage(mContext.getString(R.string.errorCheckDevices));
-        }
-    }*/
-
 
 }
 
