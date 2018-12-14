@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity
     {
         EditText et = findViewById(R.id.editText);
         String s = et.getText().toString();
-        BT.sendData(s);
+        BT.write(s);
     }
 
 

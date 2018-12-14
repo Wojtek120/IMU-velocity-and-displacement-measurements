@@ -21,7 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -41,7 +43,9 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     ListView lvNewDevices;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //identyfikator potrzebny do stworzenia polaczenia
-
+    private BluetoothDevice mmDevice; //urzadzenie wykorzytstywane w watku
+    private ConnectionThread mConnectionThread;
+    private ConnectedThread mConnectedThread;
 
 
     /**
@@ -386,6 +390,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         mContext.unregisterReceiver(mBroadcastReceiver2);
         mContext.unregisterReceiver(mBroadcastReceiver3);
         mContext.unregisterReceiver(mBroadcastReceiver4);
+        mContext.unregisterReceiver(mBroadcastReceiver5);
     }
 
     /**
@@ -434,43 +439,201 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
      */
     private void SetConnection(BluetoothDevice bluetoothDevice)
     {
-        showMessage(mContext.getString(R.string.connecting));
-        //Tworzenie bluetooth socket dla polaczenia z okreslonym urzadzeniem
-        try
+        startClient(bluetoothDevice);
+    }
+
+
+    /**
+     * TODO opisz to watek odpiwiedzialny za ustanawianie polaczenia
+     */
+    private class ConnectionThread extends Thread
+    {
+        private BluetoothSocket mmBluetoothSocket;
+
+
+        public ConnectionThread(BluetoothDevice device)
         {
-            mBluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
-        } catch (IOException e1)
-        {
-            Log.e("SetConnection", "Could not create Bluetooth socket");
+            Log.i("ConnectedThread", "Uruchomiono");
+
+            mmDevice = device;
         }
 
-        //Zawsze kasujemy discovery poniewaz bardzo zwalnia ono polaczenie
-        mBluetoothAdapter.cancelDiscovery();
 
-        //Utworz polaczenie
-        try
+        public void run()
         {
-            mBluetoothSocket.connect();
-        } catch (IOException e)
-        {
+            BluetoothSocket tmp = null;
+
+
+            //showMessage(mContext.getString(R.string.connecting));
+
+
+            //Tworzenie bluetooth socket dla polaczenia z okreslonym urzadzeniem
             try
             {
-                //Jesli blad IO wystapi to proba zamkniecia socket'a
-                mBluetoothSocket.close();
-            } catch (IOException e2)
+                tmp = mmDevice.createRfcommSocketToServiceRecord(MY_UUID);
+            } catch (IOException e1)
             {
-                Log.e("SetConnection", "ERROR - Could not close Bluetooth socket");
+                Log.e("SetConnection", "Could not create Bluetooth socket");
+            }
+
+
+            mmBluetoothSocket = tmp;
+
+
+            //Zawsze kasujemy discovery poniewaz bardzo zwalnia ono polaczenie
+            mBluetoothAdapter.cancelDiscovery();
+
+            //Utworz polaczenie
+            try
+            {
+                mmBluetoothSocket.connect();
+            } catch (IOException e)
+            {
+                try
+                {
+                    //Jesli blad IO wystapi to proba zamkniecia socket'a
+                    mmBluetoothSocket.close();
+                } catch (IOException e2)
+                {
+                    Log.e("SetConnection", "ERROR - Could not close Bluetooth socket");
+                }
+            }
+
+
+            connected(mmBluetoothSocket, mmDevice);
+        }
+    }
+
+
+    /**
+     * Uruchamia ConnectThread do nawiazania polaczenia
+     **/
+    public void startClient(BluetoothDevice device)
+    {
+        Log.d("startClient", "startClient: Started.");
+
+        //initprogress dialog
+        //TODO mProgressDialog = ProgressDialog.show(mContext, "Connecting Bluetooth", "Please Wait...", true);
+
+        mConnectionThread = new ConnectionThread(device);
+        mConnectionThread.start();
+    }
+
+
+    /**
+     * ConnectedThread odpowiedzialny za utrzymanie polaczenia, wysylanie danych i ich odbieranie
+     **/
+    private class ConnectedThread extends Thread
+    {
+        private final BluetoothSocket mmSocket;
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+        public ConnectedThread(BluetoothSocket socket)
+        {
+            Log.d("ConnectedThread", "ConnectedThread: Starting.");
+
+            mmSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            //usun dialog ladowania kiedy sie polaczymy
+            try
+            {
+                //TODO mProgressDialog.dismiss();
+            } catch (NullPointerException e)
+            {
+                e.printStackTrace();
+            }
+
+
+            try
+            {
+                tmpIn = mmSocket.getInputStream();
+                tmpOut = mmSocket.getOutputStream();
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        public void run()
+        {
+            byte[] buffer = new byte[1024];  // buffer dla stream
+
+            int bytes; // bytes zwrocony przez read()
+
+            // Nasluchuj do InputStream until az exception wystapi
+            while (true)
+            {
+                //Czytaj z InputStream
+                try
+                {
+                    bytes = mmInStream.read(buffer);
+                    String incomingMessage = new String(buffer, 0, bytes);
+                    Log.d("ConnectedThread", "InputStream: " + incomingMessage);
+                } catch (IOException e)
+                {
+                    Log.e("ConnectedThread", "write: Error reading Input Stream. " + e.getMessage());
+                    break;
+                }
             }
         }
 
-        // Tworzenie data stream aby urzadzenia mogly sie komunikowac
-        try
+        //Funkcja wysylajaca dane
+        public void write(byte[] bytes)
         {
-            mOutputStream = mBluetoothSocket.getOutputStream();
-        } catch (IOException e)
-        {
-            Log.e("SetConnection", "ERROR - Could not create bluetooth mOutputStream");
+            String text = new String(bytes, Charset.defaultCharset());
+            Log.d("ConnectedThread", "write: Writing to outputstream: " + text);
+            try
+            {
+                mmOutStream.write(bytes);
+            } catch (IOException e)
+            {
+                Log.e("ConnectedThread", "write: Error writing to output stream. " + e.getMessage());
+            }
         }
+
+        //Zamkniecie polaczenia
+        public void cancel()
+        {
+            try
+            {
+                mmSocket.close();
+            } catch (IOException e)
+            {
+            }
+        }
+    }
+
+
+
+    /**
+     * Uruchamia thread do zarzadzania polaczeniem i wysylania danych
+     */
+    private void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice)
+    {
+        Log.d("connected", "connected: Starting.");
+        mConnectedThread = new ConnectedThread(mmSocket);
+        mConnectedThread.start();
+    }
+
+    /**
+     * Napisz do ConnectedThread
+     *
+     * @param message dane do napisania
+     * @see ConnectedThread#write(byte[])
+     */
+    public void write(String message)
+    {
+        Log.d("write", "write: Write Called.");
+        //string to byte
+        byte[] messageBuffer = message.getBytes();
+        //napisz
+        mConnectedThread.write(messageBuffer);
     }
 
 
@@ -478,7 +641,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
      * Przeslij dane
      * @param message - string z wiadomoscia do przeslania
      */
-    public void sendData(String message)
+    /*public void sendData(String message)
     {
         byte[] messageBuffer = message.getBytes();
 
@@ -492,7 +655,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
             Log.e("SetConnection", "ERROR - Device not found");
             showMessage(mContext.getString(R.string.errorCheckDevices));
         }
-    }
+    }*/
 
 
 }
