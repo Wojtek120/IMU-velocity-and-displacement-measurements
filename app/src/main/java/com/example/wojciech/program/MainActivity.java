@@ -1,9 +1,11 @@
 package com.example.wojciech.program;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,8 +19,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
 {
-    //TESTY
     BluetoothConnection BT;
+
 
 
 
@@ -28,7 +30,11 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BT = new BluetoothConnection(this);
+
+
+        BluetoothConnection.enableBluetooth(this);
+
+        //BT = new BluetoothConnection(this);
 
 
     }
@@ -43,10 +49,11 @@ public class MainActivity extends AppCompatActivity
 
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        //gdy wybierzemy menu z polaczeniem bluetooth
         if (item.getItemId() == R.id.bluetoothConnectionMenu)
         {
-            Intent intent = new Intent(this, PreferencjeActivity.class);
-            startActivity(intent);
+            Intent mIntentMenuBluetooth  = new Intent(this, BluetoothMenu.class);
+            startActivity(mIntentMenuBluetooth);
         }
 
         return true;
@@ -56,15 +63,13 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        BT.unregisterBroadcastReceiver();
-        BT.closeBluetoothSocket();
     }
 
 
     //TESTY
     public void btnEnableBluetooth(View v)
     {
-        BT.enableBluetooth();
+        BluetoothConnection.enableBluetooth(this);
     }
 
     //TESTY
@@ -86,7 +91,5 @@ public class MainActivity extends AppCompatActivity
         String s = et.getText().toString();
         BT.write(s);
     }
-
-
 
 }

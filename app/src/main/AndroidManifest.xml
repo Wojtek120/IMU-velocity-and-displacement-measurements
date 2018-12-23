@@ -6,8 +6,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!--<uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />-->
 
+    <!-- <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" /> -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".BluetoothMenu"></activity>
     </application>
 
 </manifest>

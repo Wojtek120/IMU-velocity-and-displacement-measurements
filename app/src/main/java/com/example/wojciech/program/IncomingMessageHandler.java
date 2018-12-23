@@ -3,19 +3,19 @@ package com.example.wojciech.program;
 import android.os.Handler;
 import android.widget.TextView;
 
+import java.io.Serializable;
+
 /**
  * Handler obslugujacy przychodzace dane z bluetooth
  */
-public class IncomingMessageHandler extends Handler
+public class IncomingMessageHandler extends Handler  implements Serializable
 {
     private int handlerState;
     private StringBuilder recDataString = new StringBuilder();
-    TextView txtString; //TODO to nie jest finalna wersja tego gdzie maja sie wyswietlac dane
 
-    public IncomingMessageHandler(int handlerState, TextView tv)
+    public IncomingMessageHandler(int handlerState)
     {
         this.handlerState = handlerState;
-        this.txtString = tv; //TODO to nie jest finalna wersja tego gdzie maja byc wyswietlone dane
     }
 
     public void handleMessage(android.os.Message msg)
@@ -28,7 +28,7 @@ public class IncomingMessageHandler extends Handler
             if (endOfLineIndex > 0)
             {                                           //czy na pewno są dane przed ~
                 String dataInPrint = recDataString.substring(0, endOfLineIndex);    //wyciagnij stringa
-                txtString.setText("Data Received = " + dataInPrint);
+                //txtString.setText("Data Received = " + dataInPrint);
                 int dataLength = dataInPrint.length();                          //wez dlugosc
                 //txtStringLength.setText("String Length = " + String.valueOf(dataLength));
 

@@ -8,9 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
+public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>  implements Serializable
 {
     private LayoutInflater mLayoutInflater;
     private ArrayList<BluetoothDevice> mDevices;

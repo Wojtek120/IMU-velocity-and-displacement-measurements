@@ -25,14 +25,16 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 /**
  * Klasa obslugujaca polaczenie Bluetooth z telefonem
  */
-public class BluetoothConnection  implements AdapterView.OnItemClickListener
+public class BluetoothConnection  implements AdapterView.OnItemClickListener, Serializable
 {
     private Context mContext;
     private Activity mActivity;
@@ -41,8 +43,11 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     private OutputStream mOutputStream = null;
 
     public ArrayList<BluetoothDevice> mBluetoothDevices = new ArrayList<>(); //Lista przetrzymujaca urzadzenia Bluetooth ktore zostaly wyszukane
+    public ArrayList<BluetoothDevice> mBluetoothPairedDevices;
     public DeviceListAdapter mDeviceListAdapter;
-    ListView lvNewDevices;
+    public DeviceListAdapter mDevicePairedListAdapter;
+    private static ListView lvNewDevices;
+    private static ListView lvPairedDevices;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //identyfikator potrzebny do stworzenia polaczenia
     private BluetoothDevice mmDevice; //urzadzenie wykorzytstywane w watku
@@ -51,6 +56,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     Handler bluetoothIn = null;
     final int handlerState = 0; //identyfikacja handlera
     private ProgressDialog mProgressDialog;
+    private String mIncomingMessage;
 
 
     /**
@@ -78,6 +84,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
                         break;
                     case BluetoothAdapter.STATE_ON:
                         Log.i("BluetoothConnection", "mBroadcastReceiver1: STATE ON");
+                        discoverDevices();
                         break;
                     case BluetoothAdapter.STATE_TURNING_ON:
                         Log.i("BluetoothConnection", "mBroadcastReceiver1: STATE TURNING ON");
@@ -274,15 +281,36 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
 
         lvNewDevices = mActivity.findViewById(R.id.lvNewDevices); //TODO to prawdopodobnie nie jest ostateczna lista urzadzen
         mBluetoothDevices = new ArrayList<>();
-
         lvNewDevices.setOnItemClickListener(BluetoothConnection.this);
+
+        lvPairedDevices = mActivity.findViewById(R.id.lvPairedDevices); //TODO to prawdopodobnie nie jest ostateczna lista urzadzen
+        mBluetoothPairedDevices = new ArrayList<>();
+        lvPairedDevices.setOnItemClickListener(BluetoothConnection.this);
 
 
         //handler do kolejkowania przychodziacych wiadomosci
-        bluetoothIn = new IncomingMessageHandler(handlerState, (TextView)mActivity.findViewById(R.id.przychodzace));
+        bluetoothIn = new IncomingMessageHandler(handlerState);
+
     }
 
 
+    /**
+     * Funkcja wypisujaca sparowane urzadzenia
+     */
+    public void listPairedDevices()
+    {
+        Set<BluetoothDevice> all_devices = mBluetoothAdapter.getBondedDevices();
+        if (all_devices.size() > 0)
+        {
+            for (BluetoothDevice currentDevice : all_devices)
+            {
+                Log.i("PairedDevices", "PairedDevices:" + currentDevice.getName() + ": " + currentDevice.getAddress());
+                mDevicePairedListAdapter = new DeviceListAdapter(mContext, R.layout.device_adapter_view, mBluetoothPairedDevices);
+                mBluetoothPairedDevices.add(currentDevice);
+                lvPairedDevices.setAdapter(mDevicePairedListAdapter);
+            }
+        }
+    }
 
 
 
@@ -292,19 +320,22 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     /**
      * Funkcja wlaczajaca Bluetooth
      */
-    public void enableBluetooth()
+    public static void enableBluetooth(Context context)
     {
+        BluetoothAdapter mmBluetoothAdapter  = BluetoothAdapter.getDefaultAdapter();
+        Activity mmActivity = getActivity(context);
+
         //Jesli urzadzenie nie posiada Bluetooth
-        if (mBluetoothAdapter == null)
+        if (mmBluetoothAdapter == null)
         {
             //Wyswietl informacje o braku Bluetooth
-            showMessage(mContext.getString(R.string.bluetooth_lack));
-        } else if (!mBluetoothAdapter.isEnabled())
+            Log.e("Bluetooth", "Brak bluetooth w urzadzeniu");
+        } else if (!mmBluetoothAdapter.isEnabled())
         {
             //Zapytaj uzytkownika czy wlaczyc Bluetooth
             Intent turnBluetoothOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            if (mActivity != null)
-                mActivity.startActivityForResult(turnBluetoothOn, 1);
+            if (mmActivity != null)
+                mmActivity.startActivityForResult(turnBluetoothOn, 1);
 
         }
 
@@ -338,14 +369,10 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
 
 
     /**
-     * Funkcja wyszukujaca wlaczone urzadzenia Bluetooth, oraz wlaczajaca bluetooth
-     * @see #enableBluetooth()
+     * Funkcja wyszukujaca wlaczone urzadzenia Bluetooth
      */
     public void discoverDevices()
     {
-        enableBluetooth();
-
-
         if (mBluetoothAdapter.isDiscovering())
         {
             //zatrzymaj skanowanie
@@ -427,7 +454,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
      * @param context - context z którego ma być zwrocona activity
      * @return Activity lub null w przypadku bledu
      */
-    private Activity getActivity(Context context)
+    private static Activity getActivity(Context context)
     {
         if (context == null)
         {
@@ -496,20 +523,43 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
     {
-        //zatrzymaj skanowanie
-        mBluetoothAdapter.cancelDiscovery();
-
-        //Pobier nazwe i adres kliknietego urzadzenia
-        String deviceName = mBluetoothDevices.get(i).getName();
-        String deviceAddress = mBluetoothDevices.get(i).getAddress();
-
-        Log.i("BluetoothConnection", "Wybrane urzadzenie: " + deviceName);
-        Log.i("BluetoothConnection", "Wybrane urzadzenie: " + deviceAddress);
-
-        //Paruj urzadzenie TODO Dzia;a tylko na nowszych urzadzeniach, sprawdz czy mozna inaczej
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
+        if(adapterView.getId() == R.id.lvNewDevices)
         {
-            startClient(mBluetoothDevices.get(i));
+            //zatrzymaj skanowanie
+            mBluetoothAdapter.cancelDiscovery();
+
+            //Pobier nazwe i adres kliknietego urzadzenia
+            String deviceName = mBluetoothDevices.get(i).getName();
+            String deviceAddress = mBluetoothDevices.get(i).getAddress();
+
+            Log.i("BluetoothConnection", "Wybrane urzadzenie: " + deviceName);
+            Log.i("BluetoothConnection", "Wybrane urzadzenie: " + deviceAddress);
+
+            //Paruj urzadzenie TODO Dzia;a tylko na nowszych urzadzeniach, sprawdz czy mozna inaczej
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
+            {
+                startClient(mBluetoothDevices.get(i));
+            }
+        }
+
+        //klikniecie na liste ze sparowanymi urzadzeniami
+        else
+        {
+            //zatrzymaj skanowanie
+            mBluetoothAdapter.cancelDiscovery();
+
+            //Pobier nazwe i adres kliknietego urzadzenia
+            String deviceName = mBluetoothPairedDevices.get(i).getName();
+            String deviceAddress = mBluetoothPairedDevices.get(i).getAddress();
+
+            Log.i("BluetoothConnection", "Wybrane urzadzenie: " + deviceName);
+            Log.i("BluetoothConnection", "Wybrane urzadzenie: " + deviceAddress);
+
+            //Paruj urzadzenie TODO Dzia;a tylko na nowszych urzadzeniach, sprawdz czy mozna inaczej
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
+            {
+                startClient(mBluetoothPairedDevices.get(i));
+            }
         }
     }
 
