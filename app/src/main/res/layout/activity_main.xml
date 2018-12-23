@@ -62,6 +62,14 @@
                 android:layout_height="wrap_content"
                 android:onClick="diodeOn" />
 
+            <TextView
+                android:id="@+id/przychodzace"
+                android:layout_width="148dp"
+                android:layout_height="27dp"
+                android:text="TextView"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="441dp" />
+
         </LinearLayout>
     </ScrollView>
 
