@@ -3,6 +3,7 @@ package com.example.wojciech.program;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -12,6 +13,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -46,6 +48,9 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     private BluetoothDevice mmDevice; //urzadzenie wykorzytstywane w watku
     private ConnectionThread mConnectionThread;
     private ConnectedThread mConnectedThread = null;
+    Handler bluetoothIn = null;
+    final int handlerState = 0; //identyfikacja handlera
+    private ProgressDialog mProgressDialog;
 
 
     /**
@@ -271,6 +276,10 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
         mBluetoothDevices = new ArrayList<>();
 
         lvNewDevices.setOnItemClickListener(BluetoothConnection.this);
+
+
+        //handler do kolejkowania przychodziacych wiadomosci
+        bluetoothIn = new IncomingMessageHandler(handlerState, (TextView)mActivity.findViewById(R.id.przychodzace));
     }
 
 
@@ -329,10 +338,14 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
 
 
     /**
-     * Funkcja wyszukujaca wlaczone urzadzenia Bluetooth
+     * Funkcja wyszukujaca wlaczone urzadzenia Bluetooth, oraz wlaczajaca bluetooth
+     * @see #enableBluetooth()
      */
     public void discoverDevices()
     {
+        enableBluetooth();
+
+
         if (mBluetoothAdapter.isDiscovering())
         {
             //zatrzymaj skanowanie
@@ -514,8 +527,8 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
     {
         Log.d("startClient", "startClient: Started.");
 
-        //initprogress dialog
-        //TODO mProgressDialog = ProgressDialog.show(mContext, "Connecting Bluetooth", "Please Wait...", true);
+        //uruchamia progress dialog
+        mProgressDialog = ProgressDialog.show(mContext, mContext.getString(R.string.connectingProgress), mContext.getString(R.string.please_wait), true);
 
         mConnectionThread = new ConnectionThread(device);
         mConnectionThread.start();
@@ -641,7 +654,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
             //usun dialog ladowania kiedy sie polaczymy
             try
             {
-                //TODO mProgressDialog.dismiss();
+                mProgressDialog.dismiss();
             } catch (NullPointerException e)
             {
                 e.printStackTrace();
@@ -680,6 +693,7 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener
                     bytes = mmInStream.read(buffer);
                     String incomingMessage = new String(buffer, 0, bytes);
                     Log.d("ConnectedThread", "InputStream: " + incomingMessage);
+                    bluetoothIn.obtainMessage(handlerState, bytes, -1, incomingMessage).sendToTarget();
                 } catch (IOException e)
                 {
                     Log.e("ConnectedThread", "write: Error reading Input Stream. " + e.getMessage());

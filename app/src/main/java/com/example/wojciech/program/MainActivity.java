@@ -1,8 +1,12 @@
 package com.example.wojciech.program;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -29,6 +33,24 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (item.getItemId() == R.id.bluetoothConnectionMenu)
+        {
+            Intent intent = new Intent(this, PreferencjeActivity.class);
+            startActivity(intent);
+        }
+
+        return true;
+    }
 
     @Override
     protected void onDestroy()
