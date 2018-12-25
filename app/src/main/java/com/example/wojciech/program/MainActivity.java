@@ -30,13 +30,22 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BT = (BluetoothConnection)getApplicationContext();
+    }
 
 
-        BluetoothConnection.enableBluetooth(this);
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        BT.setContextAndRegisterReceivers(this);
+    }
 
-        //BT = new BluetoothConnection(this);
-
-
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        BT.unregisterBroadcastReceiver();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.example.wojciech.program;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -25,7 +26,6 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Set;
@@ -34,7 +34,7 @@ import java.util.UUID;
 /**
  * Klasa obslugujaca polaczenie Bluetooth z telefonem
  */
-public class BluetoothConnection  implements AdapterView.OnItemClickListener, Serializable
+public class BluetoothConnection extends Application implements AdapterView.OnItemClickListener
 {
     private Context mContext;
     private Activity mActivity;
@@ -46,8 +46,8 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener, Se
     public ArrayList<BluetoothDevice> mBluetoothPairedDevices;
     public DeviceListAdapter mDeviceListAdapter;
     public DeviceListAdapter mDevicePairedListAdapter;
-    private static ListView lvNewDevices;
-    private static ListView lvPairedDevices;
+    private ListView lvNewDevices;
+    private ListView lvPairedDevices;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //identyfikator potrzebny do stworzenia polaczenia
     private BluetoothDevice mmDevice; //urzadzenie wykorzytstywane w watku
@@ -246,32 +246,39 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener, Se
     /**
      * Konstruktor - przypisuje do zmiennej mContext context i tworzy mActivity
      *
-     * @param context - context
      */
-    public BluetoothConnection(Context context)
+    public BluetoothConnection()
     {
-        this.mContext = context;
+
+    }
+
+
+    public void setContextAndRegisterReceivers(Context context)
+    {
+        Log.i("BluetoothConnection", "EEE");
+        mContext = context;
+        Log.i("BluetoothConnection", "EEE000");
         mActivity = getActivity(mContext);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
+        Log.i("BluetoothConnection", "EEE1");
         //sledzenie zmiany stanu Bluetooth do mBroadcastReceiver1
         IntentFilter BluetoothIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         mContext.registerReceiver(mBroadcastReceiver1, BluetoothIntent);
-
+        Log.i("BluetoothConnection", "EE2E");
         //sledzenie zmiany stanu do mBroadcastReceiver2 - obsluguje discoverable
         IntentFilter intentFilter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         mContext.registerReceiver(mBroadcastReceiver2, intentFilter);
-
+        Log.i("BluetoothConnection", "EEE3");
         //Broadcast od wyszukiwania urzadzen
         IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         mContext.registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-
+        Log.i("BluetoothConnection", "EEE4");
         //Bradcast kiedy zmieni sie stan bond np. parowanie
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         mContext.registerReceiver(mBroadcastReceiver4, filter);
 
-
+        Log.i("BluetoothConnection", "EEE5");
         //BroadcastReceiver ktory mowi o laczeniu urzadzenia
         IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
         filter1.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
@@ -279,19 +286,26 @@ public class BluetoothConnection  implements AdapterView.OnItemClickListener, Se
         mContext.registerReceiver(mBroadcastReceiver5, filter1);
 
 
-        lvNewDevices = mActivity.findViewById(R.id.lvNewDevices); //TODO to prawdopodobnie nie jest ostateczna lista urzadzen
-        mBluetoothDevices = new ArrayList<>();
-        lvNewDevices.setOnItemClickListener(BluetoothConnection.this);
-
-        lvPairedDevices = mActivity.findViewById(R.id.lvPairedDevices); //TODO to prawdopodobnie nie jest ostateczna lista urzadzen
-        mBluetoothPairedDevices = new ArrayList<>();
-        lvPairedDevices.setOnItemClickListener(BluetoothConnection.this);
-
 
         //handler do kolejkowania przychodziacych wiadomosci
         bluetoothIn = new IncomingMessageHandler(handlerState);
-
     }
+
+
+    public void setTextViews()
+    {
+        Log.i("BluetoothConnection", "EEE6");
+        lvNewDevices = mActivity.findViewById(R.id.lvNewDevices); //TODO to prawdopodobnie nie jest ostateczna lista urzadzen
+        mBluetoothDevices = new ArrayList<>();
+        lvNewDevices.setOnItemClickListener(BluetoothConnection.this);
+        Log.i("BluetoothConnection", "EEE7");
+        lvPairedDevices = mActivity.findViewById(R.id.lvPairedDevices); //TODO to prawdopodobnie nie jest ostateczna lista urzadzen
+        mBluetoothPairedDevices = new ArrayList<>();
+        lvPairedDevices.setOnItemClickListener(BluetoothConnection.this);
+        Log.i("BluetoothConnection", "EEE8");
+    }
+
+
 
 
     /**

@@ -1,14 +1,12 @@
 package com.example.wojciech.program;
 
 import android.os.Handler;
-import android.widget.TextView;
 
-import java.io.Serializable;
 
 /**
  * Handler obslugujacy przychodzace dane z bluetooth
  */
-public class IncomingMessageHandler extends Handler  implements Serializable
+public class IncomingMessageHandler extends Handler
 {
     private int handlerState;
     private StringBuilder recDataString = new StringBuilder();

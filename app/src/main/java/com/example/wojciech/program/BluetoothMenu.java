@@ -15,25 +15,28 @@ public class BluetoothMenu extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_menu);
 
-        BT = new BluetoothConnection(this);
+        BT = (BluetoothConnection)getApplicationContext();
 
+        BT.setContextAndRegisterReceivers(this);
+        BT.setTextViews();
 
         BT.discoverDevices();
         BT.listPairedDevices();
     }
 
-    @Override
-    protected void onDestroy()
-    {
-        BT.unregisterBroadcastReceiver();
-        BT.closeBluetoothSocket();
 
-        super.onDestroy();
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        BT.setContextAndRegisterReceivers(this);
     }
 
     @Override
     protected void onPause()
     {
         super.onPause();
+        BT.unregisterBroadcastReceiver();
     }
+
 }
