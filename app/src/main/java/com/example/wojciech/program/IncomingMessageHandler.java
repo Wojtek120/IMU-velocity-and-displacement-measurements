@@ -1,6 +1,8 @@
 package com.example.wojciech.program;
 
+import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 
 /**
@@ -10,14 +12,24 @@ public class IncomingMessageHandler extends Handler
 {
     private int handlerState;
     private StringBuilder recDataString = new StringBuilder();
+    private DatabaseHelper mDatabaseHelper;
+    private Context mContextMain;
 
-    public IncomingMessageHandler(int handlerState)
+    public IncomingMessageHandler(int handlerState, Context context)
     {
         this.handlerState = handlerState;
+        this.mContextMain = context;
+
+
+        mDatabaseHelper = new DatabaseHelper(mContextMain, "aaa");
     }
 
     public void handleMessage(android.os.Message msg)
     {
+        boolean insertData;
+        String nameOfExcercise = "cwiczenie"; //TODO trzeba skas to pobierac
+        double[] RawData = new double[9];
+
         if (msg.what == handlerState) //sprawdzeneinie czy wiadomosc jest tym co chcemy
         {
             String readMessage = (String) msg.obj;                                                                // msg.arg1 = bajty z connect thread
@@ -32,6 +44,34 @@ public class IncomingMessageHandler extends Handler
 
                 if (recDataString.charAt(0) == '#')                             //jesli zaczyna sie od # to na pewno to co chcecmy
                 {
+                    //TESTOWE DANE DO SQL
+                    String sensor1 = recDataString.substring(6, 10);            //same again...
+                    String sensor2 = recDataString.substring(11, 15);
+                    String sensor3 = recDataString.substring(16, 20);
+
+                    for(int i = 0; i<9; i=i+3 )
+                    {
+                        RawData[i] = Double.valueOf(sensor1);
+                        RawData[i+1] = Double.valueOf(sensor2);
+                        RawData[i+2] = Double.valueOf(sensor3);
+                    }
+                    //KONIEC TESTOWYCH DANYCH
+
+                    insertData = mDatabaseHelper.addData(nameOfExcercise, RawData);
+
+                    if(insertData)
+                    {
+                        Log.i("Dodawanie do SQL", "Sukces");
+                    }
+                    else
+                    {
+                        Log.e("Dodawanie do SQL", "PORAZKA");
+                    }
+
+
+
+
+
                     /*String sensor0 = recDataString.substring(1, 5);             //get sensor value from string between indices 1-5
                     String sensor1 = recDataString.substring(6, 10);            //same again...
                     String sensor2 = recDataString.substring(11, 15);

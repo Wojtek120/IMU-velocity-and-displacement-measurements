@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         BT = (BluetoothConnection)getApplicationContext();
+        BT.SetContextMain(this);
     }
 
 
@@ -62,6 +63,13 @@ public class MainActivity extends AppCompatActivity
         if (item.getItemId() == R.id.bluetoothConnectionMenu)
         {
             Intent mIntentMenuBluetooth  = new Intent(this, BluetoothMenu.class);
+            startActivity(mIntentMenuBluetooth);
+        }
+
+        //gdy wybierzemy menu z liste danych z sql
+        if (item.getItemId() == R.id.listOfDataFromSqlMenu)
+        {
+            Intent mIntentMenuBluetooth  = new Intent(this, ListDataFromSqlDatabase.class);
             startActivity(mIntentMenuBluetooth);
         }
 

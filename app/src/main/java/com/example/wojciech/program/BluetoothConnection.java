@@ -37,6 +37,7 @@ import java.util.UUID;
 public class BluetoothConnection extends Application implements AdapterView.OnItemClickListener
 {
     private Context mContext;
+    private Context mContextMain;
     private Activity mActivity;
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothSocket mBluetoothSocket = null;
@@ -244,7 +245,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
 
 
     /**
-     * Konstruktor - przypisuje do zmiennej mContext context i tworzy mActivity
+     * Konstruktor -
      *
      */
     public BluetoothConnection()
@@ -253,32 +254,33 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
     }
 
 
+    /**
+     * przypisuje kontekst do zmiennej mContext context i tworzy mActivity, ustawia register receivery
+     * @param context - kontekst
+     */
     public void setContextAndRegisterReceivers(Context context)
     {
-        Log.i("BluetoothConnection", "EEE");
         mContext = context;
-        Log.i("BluetoothConnection", "EEE000");
         mActivity = getActivity(mContext);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        Log.i("BluetoothConnection", "EEE1");
+
         //sledzenie zmiany stanu Bluetooth do mBroadcastReceiver1
         IntentFilter BluetoothIntent = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         mContext.registerReceiver(mBroadcastReceiver1, BluetoothIntent);
-        Log.i("BluetoothConnection", "EE2E");
+
         //sledzenie zmiany stanu do mBroadcastReceiver2 - obsluguje discoverable
         IntentFilter intentFilter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         mContext.registerReceiver(mBroadcastReceiver2, intentFilter);
-        Log.i("BluetoothConnection", "EEE3");
+
         //Broadcast od wyszukiwania urzadzen
         IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         mContext.registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
-        Log.i("BluetoothConnection", "EEE4");
+
         //Bradcast kiedy zmieni sie stan bond np. parowanie
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         mContext.registerReceiver(mBroadcastReceiver4, filter);
 
-        Log.i("BluetoothConnection", "EEE5");
         //BroadcastReceiver ktory mowi o laczeniu urzadzenia
         IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED);
         filter1.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
@@ -286,25 +288,34 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
         mContext.registerReceiver(mBroadcastReceiver5, filter1);
 
 
-
         //handler do kolejkowania przychodziacych wiadomosci
-        bluetoothIn = new IncomingMessageHandler(handlerState);
+        bluetoothIn = new IncomingMessageHandler(handlerState, mContextMain);
     }
 
 
+    /**
+     * Ustawia TextViews w ktorych beda wyswietlane wyszunake urzadzenia oraz sparowane
+     */
     public void setTextViews()
     {
-        Log.i("BluetoothConnection", "EEE6");
+
         lvNewDevices = mActivity.findViewById(R.id.lvNewDevices); //TODO to prawdopodobnie nie jest ostateczna lista urzadzen
         mBluetoothDevices = new ArrayList<>();
         lvNewDevices.setOnItemClickListener(BluetoothConnection.this);
-        Log.i("BluetoothConnection", "EEE7");
+
         lvPairedDevices = mActivity.findViewById(R.id.lvPairedDevices); //TODO to prawdopodobnie nie jest ostateczna lista urzadzen
         mBluetoothPairedDevices = new ArrayList<>();
         lvPairedDevices.setOnItemClickListener(BluetoothConnection.this);
-        Log.i("BluetoothConnection", "EEE8");
     }
 
+
+    /**
+     * Setter kontekstu do maina
+     */
+    public void SetContextMain(Context context)
+    {
+        mContextMain = context;
+    }
 
 
 

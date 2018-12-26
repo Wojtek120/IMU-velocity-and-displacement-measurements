@@ -26,6 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".BluetoothMenu"></activity>
+        <activity android:name=".ListDataFromSqlDatabase"></activity>
     </application>
 
 </manifest>

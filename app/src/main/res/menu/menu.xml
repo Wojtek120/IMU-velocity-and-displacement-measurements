@@ -4,6 +4,8 @@
 
     <item android:id="@+id/bluetoothConnectionMenu"
         android:title="@string/connect_to_device"/>
+    <item android:id="@+id/listOfDataFromSqlMenu"
+        android:title="@string/list_of_data_from_sql"/>
         <!--android:icon="@drawable/ic_settings_black_24dp"-->
     <!--app:showAsAction="ifRoom"-->
 

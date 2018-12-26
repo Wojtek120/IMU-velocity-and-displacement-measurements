@@ -2,6 +2,7 @@ package com.example.wojciech.program;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -16,9 +17,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private static String[] COL4_12 = {"accx", "acc_y", "acc_z", "gyro_x", "gyro_y", "gyro_z", "mag_x", "mag_y", "mag_z"};
 
 
+    /**
+     * Konstruktor
+     * @param context - kontekst
+     * @param name - nazwa tabeli
+     */
     public DatabaseHelper(Context context, String name)
     {
-        super(context, TABLE_NAME, null, 1);
+        super(context, TABLE_NAME, null, 1); //TODO tablename nie jest uzywane
     }
 
     @Override
@@ -48,12 +54,19 @@ public class DatabaseHelper extends SQLiteOpenHelper
         onCreate(sqLiteDatabase);
     }
 
-    public boolean addData(String item, double rawData[])
+
+    /**
+     * Dodawanie danych do bazy danych
+     * @param nameOfExercise - nazwa cwiczenia
+     * @param rawData - dane z wynikami
+     * @return - prawda gdy dodane poprawnie, w innym wypadku falsz
+     */
+    public boolean addData(String nameOfExercise, double[] rawData)
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL2_EXERCISE, item);
-        Log.d(TAG, "addData: Adding " + item + " to " + TABLE_NAME);
+        contentValues.put(COL2_EXERCISE, nameOfExercise);
+        Log.d(TAG, "addData: Adding " + nameOfExercise + " to " + TABLE_NAME);
 
         for(int j = 0; j < 9; j++)
         {
@@ -71,5 +84,18 @@ public class DatabaseHelper extends SQLiteOpenHelper
         {
             return true;
         }
+    }
+
+
+    /**
+     * Zwraca wszystkie dane z bazy
+     * @return - wszystkie dane
+     */
+    public Cursor getData()
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME;
+
+        return sqLiteDatabase.rawQuery(query, null);
     }
 }

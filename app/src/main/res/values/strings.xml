@@ -16,4 +16,5 @@
     <string name="connect_to_device">Połącz z urządzeniem</string>
     <string name="paired_devices">Sparowane urządzenia</string>
     <string name="finding_devices">Szukanie urządzeń...</string>
+    <string name="list_of_data_from_sql">Lista wyników z bazy SQL</string>
 </resources>
