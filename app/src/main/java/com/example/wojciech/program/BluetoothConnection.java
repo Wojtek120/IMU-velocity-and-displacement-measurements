@@ -61,6 +61,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
 
     private boolean mCollectDataState; //Czy dane maja byc zbierane
     private boolean mCollectDataStateOnChange; //prawda gdy zostal zmieniony, wykorzystywane przy zapisie danych - przypisywaniu identyfikatora
+    private  boolean mConnectionStatus;
     private String mExerciseName;
 
 
@@ -228,12 +229,14 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
                     if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action))
                     {
                         Log.i("BluetoothConnection", "Polaczono");
+                        mConnectionStatus = true;
                         showMessage(mContext.getString(R.string.connected));
                     }
                     //Rozlaczono
                     if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action))
                     {
                         Log.i("BluetoothConnection", "Rozlaczono");
+                        mConnectionStatus = false;
                         showMessage(mContext.getString(R.string.disconnected));
                     }
                 }
@@ -255,6 +258,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
     public BluetoothConnection()
     {
         mCollectDataState = false;
+        mConnectionStatus = false;
     }
 
 
@@ -835,6 +839,15 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
 
 
     /**
+     * Getter statusu polaczone. True - gdy polaczony, w innym przypadku false
+     * @return - mConnectionStatus
+     */
+    public boolean getConnectionStatus()
+    {
+        return mConnectionStatus;
+    }
+
+    /**
      * Funkcja zmieniajaca status zbierania danych - czy dane maja byc zapisywane do bazy danych
      */
     public void collectDataStateChange()
@@ -889,7 +902,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
      * getter nazwy cwiczenia przekazywany dalej przy obsludze przychodzacych danych
      * @return - nazwa cwiczenia
      */
-    public String getmExerciseName()
+    public String getExerciseName()
     {
         return mExerciseName;
     }
@@ -899,7 +912,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
      * setter nazwy cwiczenia
      * @param mExerciseName - nazwa cwiczenia
      */
-    public void setmExerciseName(String mExerciseName)
+    public void setExerciseName(String mExerciseName)
     {
         this.mExerciseName = mExerciseName;
     }

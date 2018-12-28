@@ -26,6 +26,7 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
     private ListView mListView;
     private EditText editTextWithNewName;
     int ID;
+    BluetoothConnection BT;
 
 
 
@@ -33,6 +34,9 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        BT = (BluetoothConnection)getApplicationContext();
+
         setContentView(R.layout.activity_list_data_from_sql_database_by_selected_id);
         mListView = findViewById(R.id.listViewSqlData);
         editTextWithNewName = findViewById(R.id.editTextWithNewName);
@@ -46,6 +50,12 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
     }
 
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        BT.setContextAndRegisterReceivers(this);
+    }
 
     /**
      * Funkcja wyswietlajaca wysrodkowana wiadomosc

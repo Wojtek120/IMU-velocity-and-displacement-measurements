@@ -23,6 +23,7 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
     private static final String TAG = "ListDataActivity";
     DatabaseHelper mDatabaseHelper;
     private ListView mListView;
+    BluetoothConnection BT;
 
 
 
@@ -30,6 +31,9 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        BT = (BluetoothConnection)getApplicationContext();
+
         setContentView(R.layout.list_data_from_sql_layout);
         mListView = findViewById(R.id.listViewSqlData);
         mDatabaseHelper = new DatabaseHelper(this, "aaa"); //TODO tutaj powinna byc przekazana nazwa databasu
@@ -40,6 +44,7 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
+        BT.setContextAndRegisterReceivers(this);
         listIDS();
     }
 

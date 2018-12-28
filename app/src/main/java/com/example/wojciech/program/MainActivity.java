@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -97,10 +99,22 @@ public class MainActivity extends AppCompatActivity
         BT.enableDiscoverableMode();
     }
 
-    //TESTY
+    /**
+     * Przycisk uruchamiajacy zapisywanie danych do bazy SQL
+     * @param v
+     */
     public void btnCollectData(View v)
     {
-        BT.collectDataStateChange();
+        if(BT.getConnectionStatus())
+        {
+            BT.collectDataStateChange();
+        }
+        else
+        {
+            showMessage(this.getString(R.string.connect_first));
+            Intent mIntentMenuBluetooth  = new Intent(this, BluetoothMenu.class);
+            startActivity(mIntentMenuBluetooth);
+        }
     }
 
     //testy
@@ -109,6 +123,20 @@ public class MainActivity extends AppCompatActivity
         EditText et = findViewById(R.id.editText);
         String s = et.getText().toString();
         BT.write(s);
+    }
+
+
+    /**
+     * Funkcja wyswietlajaca wysrodkowana wiadomosc
+     *
+     * @param message - wiadomosc do wyswietlenia
+     */
+    private void showMessage(String message)
+    {
+        Toast toast = Toast.makeText(this.getApplicationContext(), message, Toast.LENGTH_SHORT);
+        TextView vi = toast.getView().findViewById(android.R.id.message);
+        if (vi != null) vi.setGravity(Gravity.CENTER);
+        toast.show();
     }
 
 }
