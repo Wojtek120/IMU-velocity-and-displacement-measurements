@@ -39,8 +39,8 @@
                 android:id="@+id/button3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="btndiscoverDevices"
-                android:text="Szukaj"
+                android:onClick="btnCollectData"
+                android:text="Zbieraj dane"
                 tools:layout_editor_absoluteX="101dp"
                 tools:layout_editor_absoluteY="0dp" />
 

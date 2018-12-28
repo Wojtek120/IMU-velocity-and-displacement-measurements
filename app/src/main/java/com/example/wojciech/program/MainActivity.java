@@ -96,9 +96,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     //TESTY
-    public void btndiscoverDevices(View v)
+    public void btnCollectData(View v)
     {
-        BT.discoverDevices();
+        BT.collectDataStateChange();
     }
 
     //testy

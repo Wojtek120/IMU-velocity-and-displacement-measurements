@@ -25,8 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BluetoothMenu"></activity>
-        <activity android:name=".ListDataFromSqlDatabase"></activity>
+        <activity android:name=".BluetoothMenu" />
+        <activity android:name=".ListDataFromSqlDatabase" />
+        <activity android:name=".ListDataFromSqlDatabaseBySelectedId"></activity>
     </application>
 
 </manifest>

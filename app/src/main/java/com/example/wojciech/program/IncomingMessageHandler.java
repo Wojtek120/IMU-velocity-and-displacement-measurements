@@ -14,11 +14,17 @@ public class IncomingMessageHandler extends Handler
     private StringBuilder recDataString = new StringBuilder();
     private DatabaseHelper mDatabaseHelper;
     private Context mContextMain;
+    private  long IDofExercise;
+
+    BluetoothConnection BT;
 
     public IncomingMessageHandler(int handlerState, Context context)
     {
         this.handlerState = handlerState;
         this.mContextMain = context;
+        this.IDofExercise = -1;
+
+        BT = (BluetoothConnection)mContextMain.getApplicationContext();
 
 
         mDatabaseHelper = new DatabaseHelper(mContextMain, "aaa");
@@ -27,11 +33,20 @@ public class IncomingMessageHandler extends Handler
     public void handleMessage(android.os.Message msg)
     {
         boolean insertData;
-        String nameOfExcercise = "cwiczenie"; //TODO trzeba skas to pobierac
+        String nameOfExercise = "cwiczenie"; //TODO trzeba skas to pobierac
         double[] RawData = new double[9];
 
-        if (msg.what == handlerState) //sprawdzeneinie czy wiadomosc jest tym co chcemy
+
+        if (msg.what == handlerState && BT.getCollectDataState()) //sprawdzeneinie czy wiadomosc jest tym co chcemy
         {
+            //nadawanie unikalnego ID
+            if(BT.getCollectDataStateOnChange())
+            {
+                IDofExercise  = System.currentTimeMillis() / 1000;
+                BT.setCollectDataStateOnChange(false);
+            }
+
+
             String readMessage = (String) msg.obj;                                                                // msg.arg1 = bajty z connect thread
             recDataString.append(readMessage);                                      //dodawaj do stringa az ~
             int endOfLineIndex = recDataString.indexOf("~");                    //znajdz koniec
@@ -44,7 +59,7 @@ public class IncomingMessageHandler extends Handler
 
                 if (recDataString.charAt(0) == '#')                             //jesli zaczyna sie od # to na pewno to co chcecmy
                 {
-                    //TESTOWE DANE DO SQL
+                    //TODO TESTOWE DANE DO SQL
                     String sensor1 = recDataString.substring(6, 10);            //same again...
                     String sensor2 = recDataString.substring(11, 15);
                     String sensor3 = recDataString.substring(16, 20);
@@ -57,7 +72,7 @@ public class IncomingMessageHandler extends Handler
                     }
                     //KONIEC TESTOWYCH DANYCH
 
-                    insertData = mDatabaseHelper.addData(nameOfExcercise, RawData);
+                    insertData = mDatabaseHelper.addData(IDofExercise, nameOfExercise, RawData);
 
                     if(insertData)
                     {

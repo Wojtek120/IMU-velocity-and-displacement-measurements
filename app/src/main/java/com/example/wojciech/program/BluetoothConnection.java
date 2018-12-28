@@ -59,6 +59,9 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
     private ProgressDialog mProgressDialog;
     private String mIncomingMessage;
 
+    private boolean mCollectDataState; //Czy dane maja byc zbierane
+    private boolean mCollectDataStateOnChange; //prawda gdy zostal zmieniony, wykorzystywane przy zapisie danych - przypisywaniu identyfikatora
+
 
     /**
      * Tworzenie BroadcastReceiver, ktory sledzi zmiany stanu Bluetooth
@@ -250,7 +253,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
      */
     public BluetoothConnection()
     {
-
+        mCollectDataState = false;
     }
 
 
@@ -829,6 +832,56 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
             mConnectedThread.write(messageBuffer);
     }
 
+
+    /**
+     * Funkcja zmieniajaca status zbierania danych - czy dane maja byc zapisywane do bazy danych
+     */
+    public void collectDataStateChange()
+    {
+        if(mCollectDataState)
+        {
+            mCollectDataState = false;
+            showMessage(mContext.getString(R.string.data_collecting_stopped));
+        }
+        else
+        {
+            mCollectDataState = true;
+            showMessage(mContext.getString(R.string.data_collecting_started));
+        }
+
+        mCollectDataStateOnChange = true;
+    }
+
+
+    /**
+     * Getter statusu zbierania danych - czy dane maja byc zapisywane do bazy danych
+     * @return - mCollectDataState
+     */
+    public boolean getCollectDataState()
+    {
+        return mCollectDataState;
+    }
+
+
+
+    /**
+     * Getter statusu zmiany zbierania danych - ustawiany na true w momencie zmiany, wykorzystywany do nadawania unikalnego ID cwiczeniom
+     * @return - mCollectDataState
+     */
+    public boolean getCollectDataStateOnChange()
+    {
+        return mCollectDataStateOnChange;
+    }
+
+
+    /**
+     * Setter statusu zmiany zbierania danych - ustawiany na true w momencie zmiany, wykorzystywany do nadawania unikalnego ID cwiczeniom
+     * @param mCollectDataStateOnChange - ustawiany na falsz gdy zostanie nadany identyfikator
+     */
+    public void setCollectDataStateOnChange(boolean mCollectDataStateOnChange)
+    {
+        this.mCollectDataStateOnChange = mCollectDataStateOnChange;
+    }
 }
 
 

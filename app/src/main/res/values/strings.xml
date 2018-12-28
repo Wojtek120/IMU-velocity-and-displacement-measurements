@@ -17,4 +17,9 @@
     <string name="paired_devices">Sparowane urządzenia</string>
     <string name="finding_devices">Szukanie urządzeń...</string>
     <string name="list_of_data_from_sql">Lista wyników z bazy SQL</string>
+    <string name="show_data">Pokaż dane</string>
+    <string name="id">ID</string>
+    <string name="there_is_no_data_to_show">Brak obiektów do wyświetlenia</string>
+    <string name="data_collecting_stopped">Zatrzymano zbieranie danych</string>
+    <string name="data_collecting_started">Rozpoczęto zbieranie danych</string>
 </resources>
