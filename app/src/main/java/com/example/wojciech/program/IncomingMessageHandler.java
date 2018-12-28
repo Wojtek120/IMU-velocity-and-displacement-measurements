@@ -33,7 +33,7 @@ public class IncomingMessageHandler extends Handler
     public void handleMessage(android.os.Message msg)
     {
         boolean insertData;
-        String nameOfExercise = "cwiczenie"; //TODO trzeba skas to pobierac
+        String nameOfExercise = BT.getmExerciseName();
         double[] RawData = new double[9];
 
 

@@ -22,4 +22,9 @@
     <string name="there_is_no_data_to_show">Brak obiektów do wyświetlenia</string>
     <string name="data_collecting_stopped">Zatrzymano zbieranie danych</string>
     <string name="data_collecting_started">Rozpoczęto zbieranie danych</string>
+    <string name="delete_data">Usuń wpis</string>
+    <string name="new_exercise_name">Nowa nazwa ćwiczenia</string>
+    <string name="change_the_name">Zmień nazwę</string>
+    <string name="you_must_enter_the_name">Musisz wprowadzić nową nazwę</string>
+    <string name="deleted">Usunięto</string>
 </resources>

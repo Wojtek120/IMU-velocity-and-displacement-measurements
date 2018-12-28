@@ -20,6 +20,8 @@ public class BluetoothMenu extends AppCompatActivity
         BT.setContextAndRegisterReceivers(this);
         BT.setTextViews();
 
+        BluetoothConnection.enableBluetooth(this);
+
         BT.discoverDevices();
         BT.listPairedDevices();
     }

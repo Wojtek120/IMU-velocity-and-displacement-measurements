@@ -134,6 +134,40 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
 
     /**
+     * Funkcja aktualizujaca nazwe cwiczenia
+     * @param newName - nazwa do zaktualizowania
+     * @param id - id rekordu ktory ma byc zaktualizowany
+     */
+    public void updateExerciseName(String newName, int id)
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String query = "UPDATE " + TABLE_NAME + " SET " + COL2_EXERCISE + " = '" + newName +
+                "' WHERE " + COL1_ID + " = '" + id + "'";
+        Log.i(TAG, "updateName " + query);
+
+        sqLiteDatabase.execSQL(query);
+    }
+
+
+
+    /**
+     * Funkcja usuwajaca cwiczenie o danym ID
+     * @param id - id rekordu ktory ma byc usuniety
+     */
+    public void deleteExercise(int id)
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL1_ID + " = '" + id + "'";
+        Log.i(TAG, "updateName " + query);
+
+        sqLiteDatabase.execSQL(query);
+    }
+
+
+
+
+
+    /**
      * Zwraca liczbe wierszy tabeli
      *
      * @return - liczba wierszy

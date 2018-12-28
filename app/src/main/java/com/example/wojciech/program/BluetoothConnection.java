@@ -61,6 +61,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
 
     private boolean mCollectDataState; //Czy dane maja byc zbierane
     private boolean mCollectDataStateOnChange; //prawda gdy zostal zmieniony, wykorzystywane przy zapisie danych - przypisywaniu identyfikatora
+    private String mExerciseName;
 
 
     /**
@@ -881,6 +882,26 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
     public void setCollectDataStateOnChange(boolean mCollectDataStateOnChange)
     {
         this.mCollectDataStateOnChange = mCollectDataStateOnChange;
+    }
+
+
+    /**
+     * getter nazwy cwiczenia przekazywany dalej przy obsludze przychodzacych danych
+     * @return - nazwa cwiczenia
+     */
+    public String getmExerciseName()
+    {
+        return mExerciseName;
+    }
+
+
+    /**
+     * setter nazwy cwiczenia
+     * @param mExerciseName - nazwa cwiczenia
+     */
+    public void setmExerciseName(String mExerciseName)
+    {
+        this.mExerciseName = mExerciseName;
     }
 }
 

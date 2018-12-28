@@ -8,20 +8,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/ETid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/id"
-            android:inputType="number" />
-
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="btnShowItemsWithIdFromTextView"
-            android:text="@string/show_data" />
 
         <ListView
             android:id="@+id/listViewSqlData"

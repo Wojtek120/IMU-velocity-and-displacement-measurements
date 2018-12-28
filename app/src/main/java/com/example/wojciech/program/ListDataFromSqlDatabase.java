@@ -1,5 +1,6 @@
 package com.example.wojciech.program;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,11 +33,15 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
         setContentView(R.layout.list_data_from_sql_layout);
         mListView = findViewById(R.id.listViewSqlData);
         mDatabaseHelper = new DatabaseHelper(this, "aaa"); //TODO tutaj powinna byc przekazana nazwa databasu
-
-        listIDS();
     }
 
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        listIDS();
+    }
 
     /**
      * Funkcja wyswietlajaca wysrodkowana wiadomosc
@@ -95,7 +100,10 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
                 String ID = dataFromListView.substring(0, endOfId);
 
                 Log.i(TAG, "Kliknieto " + ID);
-                listData(Integer.parseInt(ID)); //TODO to raczej powinno byc w osobnej aktywnosci ale juz z wykresem
+                //uruchamianie nowej aktywnosci gdzie wyswietlone klikniete dane
+                Intent listDataScreenIntent = new Intent(ListDataFromSqlDatabase.this, ListDataFromSqlDatabaseBySelectedId.class);
+                listDataScreenIntent.putExtra("selectedID", Integer.parseInt(ID));
+                startActivity(listDataScreenIntent);
             }
         });
     }
@@ -133,16 +141,4 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
         mListView.setAdapter(adapter);
     }
 
-
-    /**
-     * On click method - gdy wcisniemy przycisk zostana wyswietlone dane z id wpisanym w edit txcie
-     * @param view
-     */
-    public void btnShowItemsWithIdFromTextView(View view)
-    {
-        EditText ETid = findViewById(R.id.ETid);
-        int idFromEditText = Integer.parseInt(ETid.getText().toString());
-
-        listData(idFromEditText);
-    }
 }

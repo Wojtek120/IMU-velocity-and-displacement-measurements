@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity
 
         BT = (BluetoothConnection)getApplicationContext();
         BT.SetContextMain(this);
+
     }
 
 
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onResume();
         BT.setContextAndRegisterReceivers(this);
+        BluetoothConnection.enableBluetooth(this);
     }
 
     @Override
