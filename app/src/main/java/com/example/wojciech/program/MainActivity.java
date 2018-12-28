@@ -22,8 +22,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
 {
     BluetoothConnection BT;
-
-
+    private EditText editTextWithNewName;
 
 
     @Override
@@ -35,6 +34,8 @@ public class MainActivity extends AppCompatActivity
         BT = (BluetoothConnection)getApplicationContext();
         BT.SetContextMain(this);
 
+
+        editTextWithNewName = findViewById(R.id.editTextExerciseName);
     }
 
 
@@ -87,17 +88,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    //TESTY
-    public void btnEnableBluetooth(View v)
-    {
-        BluetoothConnection.enableBluetooth(this);
-    }
-
-    //TESTY
-    public void btnEnableDisable_Discoverable(View v)
-    {
-        BT.enableDiscoverableMode();
-    }
 
     /**
      * Przycisk uruchamiajacy zapisywanie danych do bazy SQL
@@ -105,9 +95,22 @@ public class MainActivity extends AppCompatActivity
      */
     public void btnCollectData(View v)
     {
+        //jesli polaczony
         if(BT.getConnectionStatus())
         {
-            BT.collectDataStateChange();
+            //jesli wprowadzono nazwe cwiczenia
+            String nameOfExercise = editTextWithNewName.getText().toString();
+
+            if(!nameOfExercise.equals(""))
+            {
+                BT.setExerciseName(nameOfExercise);
+                BT.collectDataStateChange();
+            }
+            else
+            {
+                showMessage(this.getString(R.string.you_must_enter_the_name));
+            }
+
         }
         else
         {

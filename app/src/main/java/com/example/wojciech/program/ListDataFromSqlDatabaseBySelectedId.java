@@ -1,5 +1,8 @@
 package com.example.wojciech.program;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
@@ -27,6 +30,7 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
     private EditText editTextWithNewName;
     int ID;
     BluetoothConnection BT;
+    private Context mContext = this;
 
 
 
@@ -55,6 +59,13 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
     {
         super.onResume();
         BT.setContextAndRegisterReceivers(this);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        BT.unregisterBroadcastReceiver();
     }
 
     /**
@@ -127,13 +138,32 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
 
     /**
-     * Przycisk usuwajacy wywietlony wpis
+     * Przycisk usuwajacy wywietlony wpis, po wcisnieciu pokazuje sie okno dialogowe, ktore pyta czy na pewno chcesz usunac
      * @param v
      */
     public void btnDeleteData(View v)
     {
-        mDatabaseHelper.deleteExercise(ID);
-        showMessage(this.getString(R.string.deleted));
-        finish();
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle(this.getString(R.string.delete_ask));
+        alertDialog.setMessage(this.getString(R.string.do_u_want_to_delete));
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, this.getString(R.string.delete), new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
+                mDatabaseHelper.deleteExercise(ID);
+                showMessage(mContext.getString(R.string.deleted));
+                finish();
+            }
+        });
+
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, this.getString(R.string.cancel), new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
+
     }
 }

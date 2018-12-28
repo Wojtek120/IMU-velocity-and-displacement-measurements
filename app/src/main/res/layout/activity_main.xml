@@ -17,37 +17,24 @@
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="16dp">
 
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/editTextExerciseName"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="btnEnableBluetooth"
-                android:text="enBT"
-                tools:layout_editor_absoluteX="0dp"
-                tools:layout_editor_absoluteY="0dp" />
-
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="btnEnableDisable_Discoverable"
-                android:text="enDiscoverability"
-                tools:layout_editor_absoluteX="101dp"
-                tools:layout_editor_absoluteY="0dp" />
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="@string/exercise_name" />
 
             <Button
                 android:id="@+id/button3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="btnCollectData"
-                android:text="Zbieraj dane"
+                android:text="@string/collect_data"
                 tools:layout_editor_absoluteX="101dp"
                 tools:layout_editor_absoluteY="0dp" />
 
-            <ListView
-                android:id="@+id/lvNewDevices"
-                android:layout_width="match_parent"
-                android:layout_height="190dp"/>
+
             <EditText
                 android:id="@+id/editText"
                 android:layout_width="match_parent"
@@ -58,17 +45,10 @@
 
             <Button
                 android:id="@+id/button4"
+                android:text="Wyslij"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="diodeOn" />
-
-            <TextView
-                android:id="@+id/przychodzace"
-                android:layout_width="148dp"
-                android:layout_height="27dp"
-                android:text="TextView"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="441dp" />
 
         </LinearLayout>
     </ScrollView>

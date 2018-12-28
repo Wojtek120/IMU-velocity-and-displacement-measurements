@@ -48,6 +48,13 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
         listIDS();
     }
 
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        BT.unregisterBroadcastReceiver();
+    }
+
     /**
      * Funkcja wyswietlajaca wysrodkowana wiadomosc
      *

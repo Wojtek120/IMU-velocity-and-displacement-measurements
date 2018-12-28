@@ -25,7 +25,13 @@
     <string name="delete_data">Usuń wpis</string>
     <string name="new_exercise_name">Nowa nazwa ćwiczenia</string>
     <string name="change_the_name">Zmień nazwę</string>
-    <string name="you_must_enter_the_name">Musisz wprowadzić nową nazwę</string>
+    <string name="you_must_enter_the_name">Musisz wprowadzić nazwę</string>
     <string name="deleted">Usunięto</string>
     <string name="connect_first">Połącz się najpierw z urządzeniem</string>
+    <string name="collect_data">Zbieraj dane</string>
+    <string name="exercise_name">Nazwa ćwiczenia</string>
+    <string name="delete_ask">Usunąć wpis?</string>
+    <string name="do_u_want_to_delete">Czy chcesz usunąć aktualnie wybrany wpis?</string>
+    <string name="delete">Usuń</string>
+    <string name="cancel">Anuluj</string>
 </resources>
