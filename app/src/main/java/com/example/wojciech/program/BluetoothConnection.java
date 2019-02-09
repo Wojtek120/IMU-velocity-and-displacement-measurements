@@ -775,7 +775,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
                 {
                     bytes = mmInStream.read(buffer);
                     String incomingMessage = new String(buffer, 0, bytes);
-                    Log.d("ConnectedThread", "InputStream: " + incomingMessage);
+                    //Log.d("ConnectedThread", "InputStream: " + incomingMessage);
                     bluetoothIn.obtainMessage(handlerState, bytes, -1, incomingMessage).sendToTarget();
                 } catch (IOException e)
                 {

@@ -30,6 +30,15 @@ public class IncomingMessageHandler extends Handler
         mDatabaseHelper = new DatabaseHelper(mContextMain, "aaa");
     }
 
+
+    /**
+     * Funkcja obslugujaca odbior danych z Bluetooth
+     * Pobiera nazwe cwiczenia wpisana w telefonie, nastepnie nadaje unikalny ID, ktory jest wpisywany do SQL,
+     * sluzy on do rozpoznania jednoznacznego danego cwiczenia, jest nadawany na podstawie aktualnego czasu,
+     * Funkcja rozpoznaje wiadomosc na podstawie znakow specialnych - poczatek ~, koniec #, kazdy wpis jest oddzielony +
+     * na tej podstawie rozdzielane sa pomiary z konkretnych czujnikow (i ich wspozednych) i wpisywane do bazy SQL
+     * @param msg - wiadomosc bluetooth
+     */
     public void handleMessage(android.os.Message msg)
     {
         boolean insertData;
@@ -47,60 +56,91 @@ public class IncomingMessageHandler extends Handler
             }
 
 
-            String readMessage = (String) msg.obj;                                                                // msg.arg1 = bajty z connect thread
-            recDataString.append(readMessage);                                      //dodawaj do stringa az ~
-            int endOfLineIndex = recDataString.indexOf("~");                    //znajdz koniec
+            String readMessage = (String) msg.obj; // msg.arg1 = bajty z connect thread
+            recDataString.append(readMessage); //dodawaj do stringa az ~
+            int endOfLineIndex = recDataString.indexOf("~"); //znajdz koniec
             if (endOfLineIndex > 0)
             {                                           //czy na pewno są dane przed ~
                 String dataInPrint = recDataString.substring(0, endOfLineIndex);    //wyciagnij stringa
                 //txtString.setText("Data Received = " + dataInPrint);
-                int dataLength = dataInPrint.length();                          //wez dlugosc
+                int dataLength = dataInPrint.length(); //wez dlugosc
                 //txtStringLength.setText("String Length = " + String.valueOf(dataLength));
 
-                if (recDataString.charAt(0) == '#')                             //jesli zaczyna sie od # to na pewno to co chcecmy
+
+                if (dataInPrint.charAt(0) == '#' && countOccurrencesOf(dataInPrint, '#') == 1 && countOccurrencesOf(dataInPrint, '+') == 11)                             //jesli zaczyna sie od # to na pewno to co chcecmy
                 {
-                    //TODO TESTOWE DANE DO SQL
-                    String sensor1 = recDataString.substring(6, 10);            //same again...
-                    String sensor2 = recDataString.substring(11, 15);
-                    String sensor3 = recDataString.substring(16, 20);
+                    //szukanie indeksow plusow w celu oddzielenia zmiennych od siebie
+                    int controlNr1 = -1;
+                    int controlNr2 = -2;
+                    int indexOfFirstSeparationMark = 0;
+                    int indexOfSecondSeparationMark = dataInPrint.indexOf("+");
 
-                    for(int i = 0; i<9; i=i+3 )
+
+                    //Log.d("IncomingMessageHandler", "recDataString: " + dataInPrint);
+
+
+                    //wyluskanie numeru kontrolnego
+                    String controlNr1String = dataInPrint.substring(indexOfFirstSeparationMark + 1, indexOfSecondSeparationMark);
+                    controlNr1 = Integer.valueOf(controlNr1String);
+
+
+                    indexOfFirstSeparationMark = indexOfSecondSeparationMark;
+                    indexOfSecondSeparationMark = dataInPrint.indexOf("+", indexOfFirstSeparationMark+1);
+
+
+
+                    //Dane do bazy SQL
+                    for (int i = 0; i < 9; i++)
                     {
-                        RawData[i] = Double.valueOf(sensor1);
-                        RawData[i+1] = Double.valueOf(sensor2);
-                        RawData[i+2] = Double.valueOf(sensor3);
-                    }
-                    //KONIEC TESTOWYCH DANYCH
+                        String sensor = dataInPrint.substring(indexOfFirstSeparationMark + 1, indexOfSecondSeparationMark);
 
-                    insertData = mDatabaseHelper.addData(IDofExercise, nameOfExercise, RawData);
+                        RawData[i] = Double.valueOf(sensor);
+
+                        indexOfFirstSeparationMark = indexOfSecondSeparationMark;
+                        indexOfSecondSeparationMark = dataInPrint.indexOf("+", indexOfFirstSeparationMark+1);
+                    }
+
+                    //wyluskanie numeru kontrolnego
+                    String controlNr2String = dataInPrint.substring(indexOfFirstSeparationMark + 1, indexOfSecondSeparationMark);
+                    controlNr2 = Integer.valueOf(controlNr2String);
+
+
+                    insertData = mDatabaseHelper.addData(IDofExercise, nameOfExercise, controlNr1, RawData, controlNr2);
 
                     if(insertData)
                     {
-                        Log.i("Dodawanie do SQL", "Sukces");
+                        //Log.i("Dodawanie do SQL", "Sukces");
                     }
                     else
                     {
-                        Log.e("Dodawanie do SQL", "PORAZKA");
+                        //Log.e("Dodawanie do SQL", "PORAZKA");
                     }
 
 
-
-
-
-                    /*String sensor0 = recDataString.substring(1, 5);             //get sensor value from string between indices 1-5
-                    String sensor1 = recDataString.substring(6, 10);            //same again...
-                    String sensor2 = recDataString.substring(11, 15);
-                    String sensor3 = recDataString.substring(16, 20);
-
-                    sensorView0.setText(" Sensor 0 Voltage = " + sensor0 + "V");    //update the textviews with sensor values
-                    sensorView1.setText(" Sensor 1 Voltage = " + sensor1 + "V");
-                    sensorView2.setText(" Sensor 2 Voltage = " + sensor2 + "V");
-                    sensorView3.setText(" Sensor 3 Voltage = " + sensor3 + "V");*/
                 }
-                recDataString.delete(0, recDataString.length());                    //wyczysc
+                recDataString.delete(0, recDataString.length()); //wyczysc
                 // strIncom =" ";
                 dataInPrint = " ";
             }
         }
+    }
+
+    /**
+     * Zlicza wystapienie symbolu - uzywane do sprawdzenia czy wiadomosc nie jest za duza, posklejana z kilku - wystepowalo przy peirwszych
+     * @param string - string w ktorym maja byc zliczane wystapienia
+     * @param symbol - symbol
+     * @return - liczba wystapien symbol'u
+     */
+    private int countOccurrencesOf(String string, char symbol)
+    {
+        int occurrence = 0;
+
+        for(int i = 0; i < string.length(); i++)
+        {
+            if(string.charAt(i) == symbol)
+                occurrence++;
+        }
+
+        return occurrence;
     }
 }

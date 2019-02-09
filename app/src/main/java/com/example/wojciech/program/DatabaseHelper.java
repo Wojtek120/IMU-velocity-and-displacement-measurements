@@ -12,12 +12,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
 {
     private static final Integer NUMBER_OF_COLUMNS = 13;
     private static final String TAG = "DatabaseHelper";
-    private static String TABLE_NAME = "RawDataDatabase3";
+    private static String TABLE_NAME = "RawDataDatabase4";
     private static String COL0_NUMBER = "number";
     private static String COL1_ID = "id";
     private static String COL2_EXERCISE = "exercise";
     private static String COL3_TIME = "time";
-    private static String[] COL4_12 = {"accx", "acc_y", "acc_z", "gyro_x", "gyro_y", "gyro_z", "mag_x", "mag_y", "mag_z"};
+    private static String COL4_CONTROL_NR_1 = "control_nr_1";
+    private static String[] COL5_13 = {"accx", "acc_y", "acc_z", "gyro_x", "gyro_y", "gyro_z", "mag_x", "mag_y", "mag_z"};
+    private static String COL14_CONTROL_NR_2 = "control_nr_2";
 
 
     /**
@@ -38,15 +40,17 @@ public class DatabaseHelper extends SQLiteOpenHelper
                 COL1_ID + " INTEGER, " +
                 COL2_EXERCISE + " TEXT, " +
                 COL3_TIME + " DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')), " +
-                COL4_12[0] + " REAL, " +
-                COL4_12[1] + " REAL, " +
-                COL4_12[2] + " REAL, " +
-                COL4_12[3] + " REAL, " +
-                COL4_12[4] + " REAL, " +
-                COL4_12[5] + " REAL, " +
-                COL4_12[6] + " REAL, " +
-                COL4_12[7] + " REAL, " +
-                COL4_12[8] + " REAL)";
+                COL4_CONTROL_NR_1 + " INTEGER, " +
+                COL5_13[0] + " REAL, " +
+                COL5_13[1] + " REAL, " +
+                COL5_13[2] + " REAL, " +
+                COL5_13[3] + " REAL, " +
+                COL5_13[4] + " REAL, " +
+                COL5_13[5] + " REAL, " +
+                COL5_13[6] + " REAL, " +
+                COL5_13[7] + " REAL, " +
+                COL5_13[8] + " REAL, " +
+                COL14_CONTROL_NR_2 + " INTEGER)";
 
         sqLiteDatabase.execSQL(createTable);
 
@@ -67,19 +71,23 @@ public class DatabaseHelper extends SQLiteOpenHelper
      * @param rawData        - dane z wynikami
      * @return - prawda gdy dodane poprawnie, w innym wypadku falsz
      */
-    public boolean addData(long IDofExercise, String nameOfExercise, double[] rawData)
+    public boolean addData(long IDofExercise, String nameOfExercise, int controlNumber1, double[] rawData, int controlNumber2)
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL1_ID, IDofExercise);
         contentValues.put(COL2_EXERCISE, nameOfExercise);
-        Log.d(TAG, "addData: Adding " + nameOfExercise + " to " + TABLE_NAME);
+        //Log.d(TAG, "addData: Adding " + nameOfExercise + " to " + TABLE_NAME);
+
+        contentValues.put(COL4_CONTROL_NR_1, controlNumber1);
 
         for (int j = 0; j < 9; j++)
         {
-            contentValues.put(COL4_12[j], rawData[j]);
-            Log.d(TAG, "addData: Adding " + String.valueOf(rawData[j]) + " to " + TABLE_NAME);
+            contentValues.put(COL5_13[j], rawData[j]);
+            //Log.d(TAG, "addData: Adding " + String.valueOf(rawData[j]) + " to " + TABLE_NAME);
         }
+
+        contentValues.put(COL14_CONTROL_NR_2, controlNumber2);
 
         long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
 
