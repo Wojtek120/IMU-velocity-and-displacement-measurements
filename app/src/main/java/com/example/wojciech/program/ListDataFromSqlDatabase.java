@@ -18,11 +18,22 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+/**
+ * Klasa, ktora sluzy do wyswietlenia wszystkich serii pomiarow (po jednym zapisie) aby moc wybrac ktorys z nich
+ * w celu dalszego przejzenia
+ */
 public class ListDataFromSqlDatabase extends AppCompatActivity
 {
+    /** TAG */
     private static final String TAG = "ListDataActivity";
+
+    /** Database helper do obslugi bazy danych */
     DatabaseHelper mDatabaseHelper;
+
+    /** ListView w ktorym wyswietlane sa pomiary */
     private ListView mListView;
+
+    /** Klasa aplikacji obslugujaca bluetooth */
     BluetoothConnection BT;
 
 
@@ -120,37 +131,5 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
         });
     }
 
-
-    /**
-     * Wypisuje dane z bazy danych do ListView
-     * @param IDinSQL - nazwa ID w bazie danych do ktorego ma zostac zwrocone ID, jesli -1 to zwrocone wszytskie dane
-     */
-    private void listData(int IDinSQL)
-    {
-        Log.d(TAG, "listing all data");
-        StringBuilder allDataToShow = new StringBuilder();
-
-        int numberOfColumns = mDatabaseHelper.getNumberOfColumns();
-
-        //wez dane i dolacz do listy
-        Cursor data = mDatabaseHelper.getData(IDinSQL);
-        ArrayList<String> listData = new ArrayList<>();
-        while(data.moveToNext())
-        {
-            allDataToShow.delete(0, allDataToShow.length());;
-            //dane z wszystkich kolumn wpisane do String i pozniej wypisane w listData
-            for(int i = 0; i < numberOfColumns; i++)
-            {
-                allDataToShow.append(data.getString(i));
-                allDataToShow.append("; ");
-            }
-            listData.add(allDataToShow.toString());
-        }
-
-
-        //list adapter
-        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listData);
-        mListView.setAdapter(adapter);
-    }
 
 }

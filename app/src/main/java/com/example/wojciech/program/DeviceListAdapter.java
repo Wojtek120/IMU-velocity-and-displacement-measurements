@@ -11,9 +11,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/**
+ * ArrayAdapter wykorzystywany przy listowaniu wyszukanych urzadzen z wlaczonym bluetooth
+ */
 public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
 {
+    /** LayoutInflater */
     private LayoutInflater mLayoutInflater;
+
+    /** ArrayList z urzadzeniami bluetooth, z nich pozyskiwana jest nazwa i adres MAC */
     private ArrayList<BluetoothDevice> mDevices;
     private int mViewResourceId;
 
@@ -40,7 +46,7 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
      */
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        convertView = mLayoutInflater.inflate(mViewResourceId, null); //TODO ogarnac ten szit
+        convertView = mLayoutInflater.inflate(mViewResourceId, null); //TODO ogarnac
 
         BluetoothDevice device = mDevices.get(position);
 

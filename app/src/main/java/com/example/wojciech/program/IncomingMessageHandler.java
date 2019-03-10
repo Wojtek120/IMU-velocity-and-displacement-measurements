@@ -1,19 +1,34 @@
 package com.example.wojciech.program;
 
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 
 /**
- * Handler obslugujacy przychodzace dane z bluetooth
+ * Handler obslugujacy przychodzace dane z bluetooth,
+ * sprawdza ich poprawnosc, komplentnosc,
+ * nadaje unukalne ID do serii pomiarowe,
+ * zapisuje dane w bazie SQL,
+ * polaczony z watkiem
+ * @see com.example.wojciech.program.BluetoothConnection.ConnectedThread
  */
 public class IncomingMessageHandler extends Handler
 {
+    /** Identyfikator wiadomosci */
     private int handlerState;
+
+    /** StringBuilder do obroki wiadomosci */
     private StringBuilder recDataString = new StringBuilder();
+
+    /** Do oblsugi bay danych */
     private DatabaseHelper mDatabaseHelper;
+
+    /** Kontekst do maina */
     private Context mContextMain;
+
+    /** ID serii danych */
     private  long IDofExercise;
 
     BluetoothConnection BT;

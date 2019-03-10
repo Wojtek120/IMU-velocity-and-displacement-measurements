@@ -1,24 +1,22 @@
 package com.example.wojciech.program;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 
+/**
+ * Klasa z glowna aktywnoscia
+ * @author Wojciech Buczko
+ */
 public class MainActivity extends AppCompatActivity
 {
     BluetoothConnection BT;
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onResume();
         BT.setContextAndRegisterReceivers(this);
-        BluetoothConnection.enableBluetooth(this);
+
     }
 
     @Override
@@ -62,6 +60,9 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Obsluga wyboru elementu z menu aplikacji
+     */
     public boolean onOptionsItemSelected(MenuItem item)
     {
         //gdy wybierzemy menu z polaczeniem bluetooth
@@ -90,8 +91,10 @@ public class MainActivity extends AppCompatActivity
 
 
     /**
-     * Przycisk uruchamiajacy zapisywanie danych do bazy SQL
-     * @param v
+     * Funkcja obslugujaca przycisk uruchamiajacy zapis danych do bazy SQL,
+     * sprawdza, czy jestesmy polaczeni z urzadzeniem przez bluetooth oraz czy wpisano nazwe cwiczenia
+     * gdy brak polaczenia przenosi do aktwnosci, w ktorej mozna ustnowic polaczenie
+     * @see BluetoothMenu
      */
     public void btnCollectData(View v)
     {
@@ -121,17 +124,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     //testy
-    public void diodeOn(View v)
+    /*public void diodeOn(View v)
     {
         EditText et = findViewById(R.id.editText);
         String s = et.getText().toString();
         BT.write(s);
-    }
+    }*/
 
 
     /**
      * Funkcja wyswietlajaca wysrodkowana wiadomosc
-     *
      * @param message - wiadomosc do wyswietlenia
      */
     private void showMessage(String message)

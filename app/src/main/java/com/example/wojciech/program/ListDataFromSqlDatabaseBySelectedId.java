@@ -11,25 +11,39 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 
+/**
+ * Klasa sluzaca do wyswietlenia wszystkich danych pomiarowych posiadajacych okreslony ID,
+ * w niej tez mozna zminiac nazwe serii pomiarow, badz usuwac ja
+ */
 public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 {
-
+    /** TAG */
     private static final String TAG = "ListDataActivity";
+
+    /** Database helper do obslugi bazy danych */
     DatabaseHelper mDatabaseHelper;
+
+    /** ListView w ktorym wyswietlane sa pomiary */
     private ListView mListView;
+
+    /** EditText w ktorym uzytkownik wpisuje nowa nazwe serii */
     private EditText editTextWithNewName;
+
+    /** ID serii pomiarowej, ktora jest wyswietlana */
     int ID;
+
+    /** Klasa aplikacji obslugujaca bluetooth */
     BluetoothConnection BT;
+
+    /** Kontekst */
     private Context mContext = this;
 
 
@@ -70,7 +84,6 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
     /**
      * Funkcja wyswietlajaca wysrodkowana wiadomosc
-     *
      * @param message - wiadomosc do wyswietlenia
      */
     private void showMessage(String message)
@@ -86,7 +99,7 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
     /**
      * Wypisuje dane z bazy danych do ListView
-     * @param IDinSQL - nazwa ID w bazie danych do ktorego ma zostac zwrocone ID, jesli -1 to zwrocone wszytskie dane
+     * @param IDinSQL - ID w bazie danych serii pomiarowej której dane maja zostac zwrocone, jesli -1 to zwrocone wszytskie dane
      */
     private void listData(int IDinSQL)
     {
@@ -119,7 +132,6 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
     /**
      * Przycisk potwierdzajacy zmiane nazwy cwiczenia
-     * @param v
      */
     public void btnChangeName(View v)
     {
@@ -138,8 +150,7 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
 
     /**
-     * Przycisk usuwajacy wywietlony wpis, po wcisnieciu pokazuje sie okno dialogowe, ktore pyta czy na pewno chcesz usunac
-     * @param v
+     * Przycisk usuwajacy wywietlony wpis, po wcisnieciu pokazuje sie okno dialogowe, ktore pyta, czy na pewno chcesz usunac
      */
     public void btnDeleteData(View v)
     {

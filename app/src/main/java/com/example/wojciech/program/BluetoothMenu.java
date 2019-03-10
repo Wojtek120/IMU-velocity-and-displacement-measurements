@@ -1,10 +1,12 @@
 package com.example.wojciech.program;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
+
+/**
+ * Aktywnosc, w ktore wyswietlane sa sparowane urzadzenia oraz wyszukiwane
+ */
 public class BluetoothMenu extends AppCompatActivity
 {
     BluetoothConnection BT;

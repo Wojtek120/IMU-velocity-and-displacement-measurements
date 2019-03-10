@@ -8,17 +8,40 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+/**
+ * Klasa odpowiedzialna za obsluge bazy danych SQLite,
+ * w niej baza jest tworzona i wysylane sa zapytania do niej
+ */
 public class DatabaseHelper extends SQLiteOpenHelper
 {
+    /** Liczba kolumn */
     private static final Integer NUMBER_OF_COLUMNS = 13;
+
+    /** TAG */
     private static final String TAG = "DatabaseHelper";
+
+    /** Nazwa bazy danych */
     private static String TABLE_NAME = "RawDataDatabase4";
+
+    /** Nazwa kolumny 1 - nr kolumny*/
     private static String COL0_NUMBER = "number";
+
+    /** Nazwa kolumny 2 - id */
     private static String COL1_ID = "id";
+
+    /** Nazwa kolumny 3 - nazwa */
     private static String COL2_EXERCISE = "exercise";
+
+    /** Nazwa kolumny 4 - czas */
     private static String COL3_TIME = "time";
+
+    /** Nazwa kolumny 5 - nr kontrolny1 */
     private static String COL4_CONTROL_NR_1 = "control_nr_1";
+
+    /** Nazwa kolumn od 6 do 14 - pomiary z czujnikow */
     private static String[] COL5_13 = {"accx", "acc_y", "acc_z", "gyro_x", "gyro_y", "gyro_z", "mag_x", "mag_y", "mag_z"};
+
+    /** Nazwa kolumny 15 - nr kontrolny2 */
     private static String COL14_CONTROL_NR_2 = "control_nr_2";
 
 
@@ -160,7 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     /**
      * Funkcja usuwajaca cwiczenie o danym ID
-     * @param id - id rekordu ktory ma byc usuniety
+     * @param id - id rekordu, ktory ma byc usuniety
      */
     public void deleteExercise(int id)
     {

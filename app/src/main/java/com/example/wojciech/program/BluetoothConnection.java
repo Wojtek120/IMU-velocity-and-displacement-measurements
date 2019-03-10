@@ -68,6 +68,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
     /**
      * Tworzenie BroadcastReceiver, ktory sledzi zmiany stanu Bluetooth
      * Uzywany przez metode enableBluetooth()
+     * @see com.example.wojciech.program.BluetoothConnection#enableBluetooth(Context )
      */
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver()
     {
@@ -104,6 +105,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
     /**
      * Tworzenie BroadcastReceiver, ktory sledzi zmiany statusu Discoverable (urzadzenie mozna wyszukac przez inne)
      * Uzywany przez metode enableDiscoverableMode()
+     * @see com.example.wojciech.program.BluetoothConnection#enableDiscoverableMode( )
      */
     private final BroadcastReceiver mBroadcastReceiver2 = new BroadcastReceiver()
     {
@@ -144,6 +146,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
     /**
      * Tworzenie BroadcastReceiver, ktory sledzi stan wyszukiwania urzadzen, ktore nie sa sparowane i dodanie ich do listy mBluetoothDevices
      * Uzywany przez metode discoverDevices()
+     * @see com.example.wojciech.program.BluetoothConnection#discoverDevices()
      */
     private final BroadcastReceiver mBroadcastReceiver3 = new BroadcastReceiver()
     {
@@ -212,7 +215,7 @@ public class BluetoothConnection extends Application implements AdapterView.OnIt
 
 
     /**
-     * BroadcastReceiver, ktory nasluchuje bluetooth broadcasts
+     * BroadcastReceiver, ktory nasluchuje bluetooth broadcasts, informuje gdy polaczono lub rozlaczono z urzadzeniem
      */
     private final BroadcastReceiver mBroadcastReceiver5 = new BroadcastReceiver()
     {
