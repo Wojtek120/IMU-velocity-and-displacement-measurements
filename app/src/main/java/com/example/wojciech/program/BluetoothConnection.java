@@ -36,32 +36,74 @@ import java.util.UUID;
  */
 public class BluetoothConnection extends Application implements AdapterView.OnItemClickListener
 {
+    /** Kontekst */
     private Context mContext;
+
+    /** Kontekst do main */
     private Context mContextMain;
+
+    /** Activity z mContext */
     private Activity mActivity;
+
+    /** BluetoothAdapter */
     private BluetoothAdapter mBluetoothAdapter = null;
+
+    /** Gniazdo bluetooth */
     private BluetoothSocket mBluetoothSocket = null;
+
+    /** Wyjsciowy stream */
     private OutputStream mOutputStream = null;
 
-    public ArrayList<BluetoothDevice> mBluetoothDevices = new ArrayList<>(); //Lista przetrzymujaca urzadzenia Bluetooth ktore zostaly wyszukane
+    /** Lista przetrzymujaca urzadzenia Bluetooth, ktore zostaly wyszukane */
+    public ArrayList<BluetoothDevice> mBluetoothDevices = new ArrayList<>();
+
+    /** Lista z sparowanymi urzadzeniami */
     public ArrayList<BluetoothDevice> mBluetoothPairedDevices;
+
+    /** DeviceListAdapter - klasa do wyswietlania danych */
     public DeviceListAdapter mDeviceListAdapter;
+
+    /** DeviceListAdapter dla sparowanych urzadzen - klasa do wyswietlania danych */
     public DeviceListAdapter mDevicePairedListAdapter;
+
+    /** ListView z wyszukanymi urzadzeniami */
     private ListView lvNewDevices;
+
+    /** ListView z sparowanymi urzadzeniami */
     private ListView lvPairedDevices;
 
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //identyfikator potrzebny do stworzenia polaczenia
-    private BluetoothDevice mmDevice; //urzadzenie wykorzytstywane w watku
-    private ConnectionThread mConnectionThread;
-    private ConnectedThread mConnectedThread = null;
-    Handler bluetoothIn = null;
-    final int handlerState = 0; //identyfikacja handlera
-    private ProgressDialog mProgressDialog;
-    private String mIncomingMessage;
+    /** UUID - identyfikator potrzebny do stworzenia polaczenia */
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    private boolean mCollectDataState; //Czy dane maja byc zbierane
-    private boolean mCollectDataStateOnChange; //prawda gdy zostal zmieniony, wykorzystywane przy zapisie danych - przypisywaniu identyfikatora
+    /** Urzadzenie wykorzytstywane w watku */
+    private BluetoothDevice mmDevice;
+
+    /** Watek obslugujacy laczenie */
+    private ConnectionThread mConnectionThread;
+
+    /** Watek utrzymujacy polaczenie */
+    private ConnectedThread mConnectedThread = null;
+
+    /** Handler do klasy IncomingMessage handler
+     * @see com.example.wojciech.program.IncomingMessageHandler */
+    Handler bluetoothIn = null;
+
+    /** Identyfikacja handlera */
+    final int handlerState = 0;
+
+    /** Okno dialogowe oczekiwania */
+    private ProgressDialog mProgressDialog;
+
+    /** Informacja czy dane maja byc zbierane */
+    private boolean mCollectDataState;
+
+    /** Prawda gdy zostal zmieniony, wykorzystywane przy zapisie danych - przypisywaniu identyfikatora */
+    private boolean mCollectDataStateOnChange;
+
+    /** Status polaczenia */
     private  boolean mConnectionStatus;
+
+    /** Nazwa serii danych */
     private String mExerciseName;
 
 
