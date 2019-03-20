@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Program</string>
+    <string name="hello">Witaj!</string>
+    <string name="instruction_main">Wprowadź nazwę ćwiczenia</string>
+    <string name="instruction_main2">i rozpocznij zbieranie danych.</string>
     <string name="bluetooth_lack">Urządzenie nie posiada Bluetooth</string>
     <string name="bonded">Sparowano</string>
     <string name="bonding">Parowanie</string>
