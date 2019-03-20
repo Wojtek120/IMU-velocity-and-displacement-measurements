@@ -52,8 +52,8 @@ public class DeviceListAdapter extends ArrayAdapter<BluetoothDevice>
 
         if(device != null)
         {
-            TextView deviceName = convertView.findViewById(R.id.tvDeviceName); //TODO to nie jest raczej finalna lista
-            TextView deviceAddress = convertView.findViewById(R.id.tvDeviceAddress); //TODO jw
+            TextView deviceName = convertView.findViewById(R.id.tvDeviceName);
+            TextView deviceAddress = convertView.findViewById(R.id.tvDeviceAddress);
 
             if (deviceName != null)
             {

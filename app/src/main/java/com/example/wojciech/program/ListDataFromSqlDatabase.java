@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Klasa, ktora sluzy do wyswietlenia wszystkich serii pomiarow (po jednym zapisie) aby moc wybrac ktorys z nich
@@ -36,6 +37,9 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
     /** Klasa aplikacji obslugujaca bluetooth */
     BluetoothConnection BT;
 
+    /** List adapter do wypisywania cwiczen i ich dat */
+    private ExerciseListAdapter mExerciseListAdapter;
+
 
 
     @Override
@@ -47,6 +51,7 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
 
         setContentView(R.layout.list_data_from_sql_layout);
         mListView = findViewById(R.id.listViewSqlData);
+
         mDatabaseHelper = new DatabaseHelper(this, "aaa"); //TODO tutaj powinna byc przekazana nazwa databasu
     }
 
@@ -86,28 +91,24 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
     private void listIDS()
     {
         Log.d(TAG, "listing ID's");
-        StringBuilder dataToShow = new StringBuilder();
-
 
         //wez dane i dolacz do listy
         Cursor data = mDatabaseHelper.getIDS();
-        final ArrayList<String> listData = new ArrayList<>();
+        final ArrayList<String[]> listData = new ArrayList<>();
         while(data.moveToNext())
         {
-            dataToShow.delete(0, dataToShow.length());;
+            String[] nameAndDate = new String[3];
             //dane z wszystkich kolumn wpisane do String i pozniej wypisane w listData
-            for(int i = 0; i < 3; i++)
-            {
-                dataToShow.append(data.getString(i));
-                dataToShow.append("; ");
-            }
-            listData.add(dataToShow.toString());
+            nameAndDate[0] = data.getString(2);
+            nameAndDate[1] = data.getString(1);
+            nameAndDate[2] = data.getString(0); //ID
+            listData.add(nameAndDate);
         }
 
 
-        //list adapter
-        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listData);
-        mListView.setAdapter(adapter);
+        mExerciseListAdapter = new ExerciseListAdapter(this, R.layout.records_adapter_view, listData);
+        mListView.setAdapter(mExerciseListAdapter);
+
 
 
         //gdy kilkniemy
@@ -116,13 +117,11 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
-                //pozyskanie samgo id
-                StringBuilder dataFromListView = new StringBuilder();
-                dataFromListView.append(adapterView.getItemAtPosition(i).toString());
-                int endOfId = dataFromListView.indexOf(";");
-                String ID = dataFromListView.substring(0, endOfId);
+                //pozyskanie id
+                String ID = listData.get(i)[2];
 
                 Log.i(TAG, "Kliknieto " + ID);
+
                 //uruchamianie nowej aktywnosci gdzie wyswietlone klikniete dane
                 Intent listDataScreenIntent = new Intent(ListDataFromSqlDatabase.this, ListDataFromSqlDatabaseBySelectedId.class);
                 listDataScreenIntent.putExtra("selectedID", Integer.parseInt(ID));
