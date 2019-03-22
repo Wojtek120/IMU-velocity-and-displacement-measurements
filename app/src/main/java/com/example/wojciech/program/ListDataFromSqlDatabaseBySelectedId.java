@@ -17,6 +17,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 import java.util.ArrayList;
 
 /**
@@ -111,22 +116,42 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         //wez dane i dolacz do listy
         Cursor data = mDatabaseHelper.getData(IDinSQL);
         ArrayList<String> listData = new ArrayList<>();
+
+
+
+        GraphView graph = (GraphView) findViewById(R.id.graph);
+
+        DataPoint[] dataPoint = new DataPoint[data.getCount()];
+
+        int countData = 0;
+
         while(data.moveToNext())
         {
-            allDataToShow.delete(0, allDataToShow.length());;
+            dataPoint[countData] = new DataPoint(data.getInt(0), data.getDouble(5));
+            countData++;
+            //allDataToShow.delete(0, allDataToShow.length());;
             //dane z wszystkich kolumn wpisane do String i pozniej wypisane w listData
-            for(int i = 0; i < numberOfColumns; i++)
+            /*for(int i = 0; i < numberOfColumns; i++)
             {
                 allDataToShow.append(data.getString(i));
                 allDataToShow.append("; ");
-            }
-            listData.add(allDataToShow.toString());
+            }*/
+            //listData.add(allDataToShow.toString());
         }
 
 
+
+
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoint);
+
+        graph.addSeries(series);
+        graph.getViewport().setScalable(true);
+
+
+
         //list adapter
-        ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listData);
-        mListView.setAdapter(adapter);
+        //ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listData);
+        //mListView.setAdapter(adapter);
     }
 
 
