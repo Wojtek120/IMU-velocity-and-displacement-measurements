@@ -37,4 +37,6 @@
     <string name="do_u_want_to_delete">Czy chcesz usunąć aktualnie wybrany wpis?</string>
     <string name="delete">Usuń</string>
     <string name="cancel">Anuluj</string>
+    <string name="data_collecting">Zbieram dane</string>
+    <string name="stop">Zakończ</string>
 </resources>

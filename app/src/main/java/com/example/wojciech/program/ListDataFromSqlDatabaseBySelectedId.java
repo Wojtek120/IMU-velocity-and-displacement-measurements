@@ -119,16 +119,28 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
 
 
-        GraphView graph = (GraphView) findViewById(R.id.graph);
+        GraphView graph = findViewById(R.id.graph);
 
         DataPoint[] dataPoint = new DataPoint[data.getCount()];
 
+
+
         int countData = 0;
+        boolean first = true;
+        int firstNumber = 0;
+
 
         while(data.moveToNext())
         {
-            dataPoint[countData] = new DataPoint(data.getInt(0), data.getDouble(5));
+            if(first)
+            {
+                firstNumber = data.getInt(4);
+                first = false;
+            }
+           // int firstNumber = data.getInt(4);
+            dataPoint[countData] = new DataPoint(data.getInt(4) - firstNumber, data.getDouble(5));
             countData++;
+
             //allDataToShow.delete(0, allDataToShow.length());;
             //dane z wszystkich kolumn wpisane do String i pozniej wypisane w listData
             /*for(int i = 0; i < numberOfColumns; i++)

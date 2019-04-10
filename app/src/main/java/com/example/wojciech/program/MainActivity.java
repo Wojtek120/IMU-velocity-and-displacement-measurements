@@ -1,5 +1,7 @@
 package com.example.wojciech.program;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -108,6 +110,19 @@ public class MainActivity extends AppCompatActivity
             {
                 BT.setExerciseName(nameOfExercise);
                 BT.collectDataStateChange();
+
+                AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                alertDialog.setTitle(this.getString(R.string.data_collecting));
+                alertDialog.setMessage(this.getString(R.string.data_collecting));
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, this.getString(R.string.stop), new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        BT.collectDataStateChange();
+                        //finish();
+                    }
+                });
+                alertDialog.show();
             }
             else
             {

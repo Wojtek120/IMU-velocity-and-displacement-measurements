@@ -45,7 +45,7 @@ public class MadgwickFilter
      * @param m_y - pomiar magnetometru w osi y
      * @param m_z - pomiar magnetometru w osi z
      */
-    void filterUpdate(double w_x, double w_y, double w_z, double a_x, double a_y, double a_z, double m_x, double m_y, double m_z)
+    public void filterUpdate(double w_x, double w_y, double w_z, double a_x, double a_y, double a_z, double m_x, double m_y, double m_z)
     {
         double norm; // norma wektora
         double SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4; // zmiana kwaternionu z zyroskopu
@@ -183,6 +183,22 @@ public class MadgwickFilter
         //normalizacja pola zeby miec skladowe tylko w x i z
         b_x = Math.sqrt((h_x * h_x) + (h_y * h_y));
         b_z = h_z;
+    }
+
+
+    public double getRoll()
+    {
+        return Math.atan2(SEq_1 * SEq_2 + SEq_3 * SEq_4, 0.5f - SEq_2 * SEq_2 - SEq_3 * SEq_3);
+    }
+
+    public double getPitch()
+    {
+        return Math.asin(-2.0f * (SEq_2 * SEq_4 - SEq_1 * SEq_3));
+    }
+
+    public double getYaw()
+    {
+        return Math.atan2(SEq_2 * SEq_3 + SEq_1 * SEq_4, 0.5f - SEq_3 * SEq_3 - SEq_4 * SEq_4);
     }
 
 }
