@@ -42,7 +42,7 @@ public class IncomingMessageHandler extends Handler
         BT = (BluetoothConnection)mContextMain.getApplicationContext();
 
 
-        mDatabaseHelper = new DatabaseHelper(mContextMain, "aaa");
+        mDatabaseHelper = new DatabaseHelper(mContextMain);
     }
 
 

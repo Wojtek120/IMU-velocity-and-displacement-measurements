@@ -9,7 +9,7 @@ public class MadgwickFilter
 {
     // STALE
     /** Okres probkowania [s] */
-    private final double deltat = 0.001f;
+    private final double deltat = 0.005f;
     /** Blad pomiarowy zyroskpu [rad/s] */
     private final double gyroMeasError = 3.14159265358979 * (5.0d / 180.0d); // (pokazane jako 5 deg/s)
     /** Blad pomiarowy zyroskpu [rad/s/s] */
@@ -45,7 +45,7 @@ public class MadgwickFilter
      * @param m_y - pomiar magnetometru w osi y
      * @param m_z - pomiar magnetometru w osi z
      */
-    public void filterUpdate(double w_x, double w_y, double w_z, double a_x, double a_y, double a_z, double m_x, double m_y, double m_z)
+    public void filterUpdatedouble (double a_x, double a_y, double a_z, double w_x, double w_y, double w_z, double m_x, double m_y, double m_z)
     {
         double norm; // norma wektora
         double SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4; // zmiana kwaternionu z zyroskopu

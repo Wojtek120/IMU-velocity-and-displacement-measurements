@@ -119,6 +119,25 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int id)
                     {
                         BT.collectDataStateChange();
+
+                        //oblicz katy YPR w innym watku
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                DatabaseHelperRPY databaseHelperRPY = new DatabaseHelperRPY(getApplicationContext());
+                                databaseHelperRPY.calculateRPY();
+                            }});
+
+                        t.start();
+
+                        //czekaj na skonczenie watku
+                        try
+                        {
+                            t.join();
+                        } catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
                         //finish();
                     }
                 });

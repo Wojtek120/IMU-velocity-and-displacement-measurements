@@ -52,7 +52,7 @@ public class ListDataFromSqlDatabase extends AppCompatActivity
         setContentView(R.layout.list_data_from_sql_layout);
         mListView = findViewById(R.id.listViewSqlData);
 
-        mDatabaseHelper = new DatabaseHelper(this, "aaa"); //TODO tutaj powinna byc przekazana nazwa databasu
+        mDatabaseHelper = new DatabaseHelper(this);
     }
 
 

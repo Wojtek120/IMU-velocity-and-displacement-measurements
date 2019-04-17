@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -63,7 +64,7 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         setContentView(R.layout.activity_list_data_from_sql_database_by_selected_id);
         mListView = findViewById(R.id.listViewSqlData);
         editTextWithNewName = findViewById(R.id.editTextWithNewName);
-        mDatabaseHelper = new DatabaseHelper(this, "aaa"); //TODO tutaj powinna byc przekazana nazwa databasu
+        mDatabaseHelper = new DatabaseHelper(this);
 
         //pobierz ID do wyswietlenia
         Intent receivedIntent = getIntent();
@@ -114,14 +115,16 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         int numberOfColumns = mDatabaseHelper.getNumberOfColumns();
 
         //wez dane i dolacz do listy
-        Cursor data = mDatabaseHelper.getData(IDinSQL);
-        ArrayList<String> listData = new ArrayList<>();
+        DatabaseHelperRPY databaseHelperRPY = new DatabaseHelperRPY(this);
+        Cursor data = databaseHelperRPY.getData(IDinSQL);
 
 
 
         GraphView graph = findViewById(R.id.graph);
 
-        DataPoint[] dataPoint = new DataPoint[data.getCount()];
+        DataPoint[] dataPointYaw = new DataPoint[data.getCount()];
+        DataPoint[] dataPointPitch = new DataPoint[data.getCount()];
+        DataPoint[] dataPointRoll = new DataPoint[data.getCount()];
 
 
 
@@ -132,38 +135,25 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
         while(data.moveToNext())
         {
-            if(first)
-            {
-                firstNumber = data.getInt(4);
-                first = false;
-            }
-           // int firstNumber = data.getInt(4);
-            dataPoint[countData] = new DataPoint(data.getInt(4) - firstNumber, data.getDouble(5));
+            dataPointYaw[countData] = new DataPoint(data.getInt(4), data.getDouble(5));
+            dataPointPitch[countData] = new DataPoint(data.getInt(4), data.getDouble(6));
+            dataPointRoll[countData] = new DataPoint(data.getInt(4), data.getDouble(7));
             countData++;
-
-            //allDataToShow.delete(0, allDataToShow.length());;
-            //dane z wszystkich kolumn wpisane do String i pozniej wypisane w listData
-            /*for(int i = 0; i < numberOfColumns; i++)
-            {
-                allDataToShow.append(data.getString(i));
-                allDataToShow.append("; ");
-            }*/
-            //listData.add(allDataToShow.toString());
         }
 
 
 
+        LineGraphSeries<DataPoint> seriesYaw = new LineGraphSeries<DataPoint>(dataPointYaw);
+        LineGraphSeries<DataPoint> seriesPitch = new LineGraphSeries<DataPoint>(dataPointPitch);
+        seriesPitch.setColor(Color.RED);
+        LineGraphSeries<DataPoint> seriesRoll = new LineGraphSeries<DataPoint>(dataPointRoll);
+        seriesRoll.setColor(Color.GREEN);
 
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoint);
+        graph.addSeries(seriesYaw);
+        graph.addSeries(seriesPitch);
+        graph.addSeries(seriesRoll);
 
-        graph.addSeries(series);
         graph.getViewport().setScalable(true);
-
-
-
-        //list adapter
-        //ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listData);
-        //mListView.setAdapter(adapter);
     }
 
 
