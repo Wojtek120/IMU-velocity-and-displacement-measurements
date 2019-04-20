@@ -1,5 +1,6 @@
 package com.example.wojciech.program;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -173,6 +174,7 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
         MadgwickFilter madgwickFilter = new MadgwickFilter();
         int IDofExercise = databaseHelper.getLargestID();
 
+
         Cursor data = databaseHelper.getData(IDofExercise);
         double yawAngle, pitchAngle, rollAngle;
         int controlNr = 1;
@@ -183,6 +185,8 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
                     data.getDouble(8), data.getDouble(9), data.getDouble(10),
                     data.getDouble(11), data.getDouble(12), data.getDouble(13));
 
+
+
             yawAngle = madgwickFilter.getYaw();
             pitchAngle = madgwickFilter.getPitch();
             rollAngle = madgwickFilter.getRoll();
@@ -191,6 +195,10 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
 
             controlNr++;
         }
+
+        data.close();
+
+
     }
 
 }

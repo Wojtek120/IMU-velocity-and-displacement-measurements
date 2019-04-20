@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ListDataFromSqlDatabaseBySelectedId">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -27,6 +32,13 @@
             android:onClick="btnChangeName"
             android:text="@string/change_the_name" />
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+
         <Button
             android:id="@+id/button5"
             android:layout_width="match_parent"
@@ -39,6 +51,11 @@
             android:layout_height="200dip"
             android:id="@+id/graph" />
 
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="200dip"
+            android:id="@+id/graph2" />
+
        <!-- <ListView
             android:id="@+id/listViewSqlData"
             android:layout_width="match_parent"
@@ -47,5 +64,7 @@
         </ListView> -->
 
     </LinearLayout>
+
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

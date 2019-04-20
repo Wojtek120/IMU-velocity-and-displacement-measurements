@@ -39,4 +39,5 @@
     <string name="cancel">Anuluj</string>
     <string name="data_collecting">Zbieram dane</string>
     <string name="stop">Zakończ</string>
+    <string name="calculating">Obliczanie</string>
 </resources>

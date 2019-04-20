@@ -156,7 +156,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         String query;
 
-        query = "SELECT " + COL1_ID + ", " + "min(" + COL3_TIME + "), " + COL2_EXERCISE +" FROM " + TABLE_NAME + " GROUP BY " + COL1_ID;
+        query = "SELECT " + COL1_ID + ", " + "min(" + COL3_TIME + "), " + COL2_EXERCISE +" FROM " + TABLE_NAME + " GROUP BY " + COL1_ID +
+                " ORDER BY " + COL1_ID + " DESC";
 
         return sqLiteDatabase.rawQuery(query, null);
     }

@@ -122,6 +122,8 @@ public class IncomingMessageHandler extends Handler
 
                     insertData = mDatabaseHelper.addData(IDofExercise, nameOfExercise, controlNr1, RawData, controlNr2);
 
+                    mDatabaseHelper.close();
+
                     if(insertData)
                     {
                         //Log.i("Dodawanie do SQL", "Sukces");

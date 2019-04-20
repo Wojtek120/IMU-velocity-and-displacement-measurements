@@ -1,10 +1,16 @@
 package com.example.wojciech.program;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +29,9 @@ public class MainActivity extends AppCompatActivity
 {
     BluetoothConnection BT;
     private EditText editTextWithNewName;
+    Context context;
+    Handler dialogWindowHandler;
+    ProgressDialog mProgressDialog;
 
 
     @Override
@@ -36,6 +45,13 @@ public class MainActivity extends AppCompatActivity
 
 
         editTextWithNewName = findViewById(R.id.editTextExerciseName);
+
+        context = this;
+        dialogWindowHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg){
+            mProgressDialog.dismiss();            }
+        };
     }
 
 
@@ -119,6 +135,10 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int id)
                     {
                         BT.collectDataStateChange();
+                        mProgressDialog = ProgressDialog.show(context, context.getString(R.string.calculating), context.getString(R.string.please_wait), true);
+
+
+
 
                         //oblicz katy YPR w innym watku
                         Thread t = new Thread(new Runnable() {
@@ -126,18 +146,20 @@ public class MainActivity extends AppCompatActivity
                             public void run() {
                                 DatabaseHelperRPY databaseHelperRPY = new DatabaseHelperRPY(getApplicationContext());
                                 databaseHelperRPY.calculateRPY();
+                                dialogWindowHandler.sendEmptyMessage(0);
                             }});
 
                         t.start();
 
                         //czekaj na skonczenie watku
-                        try
-                        {
-                            t.join();
-                        } catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
+//                        try
+//                        {
+//                            t.join();
+//                        } catch (InterruptedException e)
+//                        {
+//                            e.printStackTrace();
+//                        }
+
                         //finish();
                     }
                 });

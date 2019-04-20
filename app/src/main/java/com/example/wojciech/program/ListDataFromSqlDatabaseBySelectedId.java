@@ -141,6 +141,9 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
             countData++;
         }
 
+        data.close();
+        databaseHelperRPY.close();
+
 
 
         LineGraphSeries<DataPoint> seriesYaw = new LineGraphSeries<DataPoint>(dataPointYaw);
@@ -154,6 +157,64 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         graph.addSeries(seriesRoll);
 
         graph.getViewport().setScalable(true);
+
+
+        ////////////////////////////////////////////////POMIARY///////////////////////////////////////////////////////
+//        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+//        Cursor data2 = databaseHelper.getData(IDinSQL);
+//        GraphView graph2 = findViewById(R.id.graph2);
+//
+//        DataPoint[] dataPointAccelX = new DataPoint[data2.getCount()];
+//        DataPoint[] dataPointAccelY = new DataPoint[data2.getCount()];
+//        DataPoint[] dataPointAccelZ = new DataPoint[data2.getCount()];
+//
+//        DataPoint[] dataPointGyroX = new DataPoint[data2.getCount()];
+//        DataPoint[] dataPointGyroY = new DataPoint[data2.getCount()];
+//        DataPoint[] dataPointGyroZ = new DataPoint[data2.getCount()];
+//
+//        countData = 0;
+//
+//        while(data2.moveToNext())
+//        {
+//            dataPointAccelX[countData] = new DataPoint(countData, data2.getDouble(5));
+//            dataPointAccelY[countData] = new DataPoint(countData, data2.getDouble(6));
+//            dataPointAccelZ[countData] = new DataPoint(countData, data2.getDouble(7));
+//
+//            dataPointGyroX[countData] = new DataPoint(countData, data2.getDouble(8));
+//            dataPointGyroY[countData] = new DataPoint(countData, data2.getDouble(9));
+//            dataPointGyroZ[countData] = new DataPoint(countData, data2.getDouble(10));
+//            countData++;
+//        }
+//
+//        data2.close();
+//
+//        LineGraphSeries<DataPoint> seriesAccelX = new LineGraphSeries<DataPoint>(dataPointAccelX);
+//        LineGraphSeries<DataPoint> seriesAccelY = new LineGraphSeries<DataPoint>(dataPointAccelY);
+//        //seriesAccelY.setColor(Color.RED);
+//        LineGraphSeries<DataPoint> seriesAccelZ = new LineGraphSeries<DataPoint>(dataPointAccelZ);
+//        //seriesAccelZ.setColor(Color.GREEN);
+//
+//        graph2.addSeries(seriesAccelX);
+//        graph2.addSeries(seriesAccelY);
+//        graph2.addSeries(seriesAccelZ);
+//
+//        LineGraphSeries<DataPoint> seriesGyroX = new LineGraphSeries<DataPoint>(dataPointGyroX);
+//        seriesGyroX.setColor(Color.RED);
+//        LineGraphSeries<DataPoint> seriesGyroY = new LineGraphSeries<DataPoint>(dataPointGyroY);
+//        seriesGyroY.setColor(Color.RED);
+//        LineGraphSeries<DataPoint> seriesGyroZ = new LineGraphSeries<DataPoint>(dataPointGyroZ);
+//        seriesGyroZ.setColor(Color.RED);
+//
+//        graph2.addSeries(seriesGyroX);
+//        graph2.addSeries(seriesGyroY);
+//        graph2.addSeries(seriesGyroZ);
+//
+//        graph2.getViewport().setScalable(true);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
     }
 
 
