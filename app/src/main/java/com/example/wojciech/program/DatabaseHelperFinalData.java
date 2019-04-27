@@ -1,6 +1,5 @@
 package com.example.wojciech.program;
 
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,59 +7,88 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.sql.Timestamp;
+
 /**
- * Klasa odpowiedzialna za obsluge wpisow katow RPY do bazy SQLite,
+ * Klasa odpowiedzialna za obsluge wpisow koncowych danych do bazy SQLite,
  * w niej baza jest tworzona i wysylane sa zapytania do niej
  */
-public class DatabaseHelperRPY extends SQLiteOpenHelper
+public class DatabaseHelperFinalData extends SQLiteOpenHelper
 {
-
-    /** TAG */
+    /**
+     * TAG
+     */
     private static final String TAG = "DatabaseHelperRPY";
 
-    /** Nazwa bazy danych */
-    private static final String TABLE_NAME = "RPYDataDatabase";
+    /**
+     * Nazwa bazy danych
+     */
+    private static final String TABLE_NAME = "FinalData";
 
-    /** Nazwa kolumny 1 - nr kolumny*/
+    /**
+     * Nazwa kolumny 1 - nr kolumny
+     */
     private static String COL0_NUMBER = "number";
 
-    /** Nazwa kolumny 2 - id */
+    /**
+     * Nazwa kolumny 2 - id
+     */
     private static String COL1_ID = "id";
 
-    /** Nazwa kolumny 3 - nazwa */
+    /**
+     * Nazwa kolumny 3 - nazwa
+     */
     private static String COL2_EXERCISE = "exercise";
 
-    /** Nazwa kolumny 4 - czas */
+    /**
+     * Nazwa kolumny 4 - czas
+     */
     private static String COL3_TIME = "time";
 
-    /** Nazwa kolumny 5 - nr kontrolny1 */
+    /**
+     * Nazwa kolumny 5 - nr kontrolny1
+     */
     private static String COL4_CONTROL_NR = "control_nr_1";
 
-    /** Nazwa kolumny 6 - kat yaw */
-    private static String COL5_YAW = "yaw";
+    /**
+     * Nazwa kolumny 6 - przyspieszenie z usunieta grawitacja w osi x
+     */
+    private static String COL5_ACCX = "accx";
 
-    /** Nazwa kolumny 7 - kat pitch */
-    private static String COL6_PITCH = "pitch";
+    /**
+     * Nazwa kolumny 7 - przyspieszenie z usunieta grawitacja w osi y
+     */
+    private static String COL6_ACCY = "accy";
 
-    /** Nazwa kolumny 8 - kat roll */
-    private static String COL7_ROLL = "roll";
+    /**
+     * Nazwa kolumny 8 - przyspieszenie z usunieta grawitacja w osi z
+     */
+    private static String COL7_ACCZ = "accz";
 
-    /** Kontekst */
+//    /** Nazwa kolumny 6 - przyspieszenie z usunieta grawitacja w osi x */
+//    private static String COL8_ACCX = "velx";
+//
+//    /** Nazwa kolumny 7 - przyspieszenie z usunieta grawitacja w osi y */
+//    private static String COL9_ACCY = "vely";
+//
+//    /** Nazwa kolumny 8 - przyspieszenie z usunieta grawitacja w osi z */
+//    private static String COL10ACCZ = "velz";
+
+    /**
+     * Kontekst
+     */
     Context context;
-
-
 
     /**
      * Konstruktor
      *
      * @param context - kontekst
      */
-    public DatabaseHelperRPY(Context context)
+    public DatabaseHelperFinalData(Context context)
     {
         super(context, TABLE_NAME, null, 1);
         this.context = context;
     }
-
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase)
@@ -68,11 +96,11 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
         String createTable = "CREATE TABLE " + TABLE_NAME + " (" + COL0_NUMBER + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COL1_ID + " INTEGER, " +
                 COL2_EXERCISE + " TEXT, " +
-                COL3_TIME + " DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')), " +
+                COL3_TIME + " DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f')), " +
                 COL4_CONTROL_NR + " INTEGER, " +
-                COL5_YAW + " REAL, " +
-                COL6_PITCH + " REAL, " +
-                COL7_ROLL + " REAL)";
+                COL5_ACCX + " REAL, " +
+                COL6_ACCY + " REAL, " +
+                COL7_ACCZ + " REAL)";
 
         sqLiteDatabase.execSQL(createTable);
 
@@ -85,29 +113,28 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
         onCreate(sqLiteDatabase);
     }
 
-
     /**
-     * Dodawanie danych do bazy danych
+     * Dodawanie danych do bazy danych i usuwanie przyspieszenia zwiazanego z grawitacja
      *
-     * @param IDofExercise - id cwiczenia
+     * @param IDofExercise   - id cwiczenia
      * @param nameOfExercise - nazwa cwiczenia
-     * @param controlNumber - numer kontrolny
-     * @param yawAngle - kat yaw
-     * @param pitchAngle - kat pitch
-     * @param rollAngle - kat roll
+     * @param date           - data
+     * @param controlNumber  - numer kontrolny
+     * @param compensatedAcc - przyspieszenie w osi x, y, z
      * @return - prawda gdy dodane poprawnie, w innym wypadku falsz
      */
-    public boolean addData(long IDofExercise, String nameOfExercise, int controlNumber, double yawAngle, double pitchAngle, double rollAngle)
+    public boolean addData(long IDofExercise, String nameOfExercise, String date, int controlNumber, double[] compensatedAcc)
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(COL1_ID, IDofExercise);
         contentValues.put(COL2_EXERCISE, nameOfExercise);
+        contentValues.put(COL3_TIME, date);
         contentValues.put(COL4_CONTROL_NR, controlNumber);
-        contentValues.put(COL5_YAW, yawAngle);
-        contentValues.put(COL6_PITCH, pitchAngle);
-        contentValues.put(COL7_ROLL, rollAngle);
+        contentValues.put(COL5_ACCX, compensatedAcc[0]);
+        contentValues.put(COL6_ACCY, compensatedAcc[1]);
+        contentValues.put(COL7_ACCZ, compensatedAcc[2]);
 
         long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
 
@@ -126,11 +153,10 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         String query;
 
-        if(IDinSQL == -1)
+        if (IDinSQL == -1)
         {
             query = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + COL3_TIME;
-        }
-        else
+        } else
         {
             query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COL1_ID + " = " + Integer.toString(IDinSQL) + " ORDER BY " + COL3_TIME;
         }
@@ -140,8 +166,9 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
 
     /**
      * Funkcja aktualizujaca nazwe cwiczenia
+     *
      * @param newName - nazwa do zaktualizowania
-     * @param id - id rekordu ktory ma byc zaktualizowany
+     * @param id      - id rekordu ktory ma byc zaktualizowany
      */
     public void updateExerciseName(String newName, int id)
     {
@@ -156,6 +183,7 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
 
     /**
      * Funkcja usuwajaca cwiczenie o danym ID
+     *
      * @param id - id rekordu, ktory ma byc usuniety
      */
     public void deleteExercise(int id)
@@ -165,52 +193,6 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
         Log.i(TAG, "updateName " + query);
 
         sqLiteDatabase.execSQL(query);
-    }
-
-
-    public void calculateRPYandCompensateGravity()
-    {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        DatabaseHelperFinalData databaseHelperFinalData = new DatabaseHelperFinalData(context);
-        MadgwickFilter madgwickFilter = new MadgwickFilter();
-        int IDofExercise = databaseHelper.getLargestID();
-
-        boolean first = true;
-
-
-        Cursor data = databaseHelper.getData(IDofExercise);
-        double yawAngle, pitchAngle, rollAngle;
-        int firstControlNr = 1;
-
-        while(data.moveToNext())
-        {
-            if(first)
-            {
-                firstControlNr = data.getInt(4);
-                first = false;
-            }
-
-            madgwickFilter.filterUpdatedouble(data.getDouble(5), data.getDouble(6), data.getDouble(7),
-                    data.getDouble(8), data.getDouble(9), data.getDouble(10),
-                    data.getDouble(11), data.getDouble(12), data.getDouble(13));
-
-
-            yawAngle = madgwickFilter.getYaw();
-            pitchAngle = madgwickFilter.getPitch();
-            rollAngle = madgwickFilter.getRoll();
-
-            addData(IDofExercise, data.getString(2), data.getInt(4) - firstControlNr, yawAngle, pitchAngle, rollAngle);
-
-            double []compensatedGravity = GravityCompensation.CompensateGravity
-                    (new double[]{data.getDouble(5), data.getDouble(6), data.getDouble(7)},
-                            madgwickFilter.getQuaternions());
-
-            databaseHelperFinalData.addData(IDofExercise, data.getString(2), data.getString(3),
-                    data.getInt(4) - firstControlNr, compensatedGravity);
-        }
-
-        data.close();
-
     }
 
 }

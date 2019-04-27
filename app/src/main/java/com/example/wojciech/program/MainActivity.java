@@ -145,22 +145,12 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void run() {
                                 DatabaseHelperRPY databaseHelperRPY = new DatabaseHelperRPY(getApplicationContext());
-                                databaseHelperRPY.calculateRPY();
+                                databaseHelperRPY.calculateRPYandCompensateGravity();
                                 dialogWindowHandler.sendEmptyMessage(0);
                             }});
 
                         t.start();
 
-                        //czekaj na skonczenie watku
-//                        try
-//                        {
-//                            t.join();
-//                        } catch (InterruptedException e)
-//                        {
-//                            e.printStackTrace();
-//                        }
-
-                        //finish();
                     }
                 });
                 alertDialog.show();

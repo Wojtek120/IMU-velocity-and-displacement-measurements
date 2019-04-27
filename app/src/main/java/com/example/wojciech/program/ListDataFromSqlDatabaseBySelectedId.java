@@ -160,60 +160,92 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
 
         ////////////////////////////////////////////////POMIARY///////////////////////////////////////////////////////
-//        DatabaseHelper databaseHelper = new DatabaseHelper(this);
-//        Cursor data2 = databaseHelper.getData(IDinSQL);
-//        GraphView graph2 = findViewById(R.id.graph2);
-//
-//        DataPoint[] dataPointAccelX = new DataPoint[data2.getCount()];
-//        DataPoint[] dataPointAccelY = new DataPoint[data2.getCount()];
-//        DataPoint[] dataPointAccelZ = new DataPoint[data2.getCount()];
-//
+        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        Cursor data2 = databaseHelper.getData(IDinSQL);
+        GraphView graph2 = findViewById(R.id.graph2);
+
+        DataPoint[] dataPointAccelX = new DataPoint[data2.getCount()];
+        DataPoint[] dataPointAccelY = new DataPoint[data2.getCount()];
+        DataPoint[] dataPointAccelZ = new DataPoint[data2.getCount()];
+
 //        DataPoint[] dataPointGyroX = new DataPoint[data2.getCount()];
 //        DataPoint[] dataPointGyroY = new DataPoint[data2.getCount()];
 //        DataPoint[] dataPointGyroZ = new DataPoint[data2.getCount()];
-//
-//        countData = 0;
-//
-//        while(data2.moveToNext())
-//        {
-//            dataPointAccelX[countData] = new DataPoint(countData, data2.getDouble(5));
-//            dataPointAccelY[countData] = new DataPoint(countData, data2.getDouble(6));
-//            dataPointAccelZ[countData] = new DataPoint(countData, data2.getDouble(7));
-//
+
+        countData = 0;
+
+        while(data2.moveToNext())
+        {
+            dataPointAccelX[countData] = new DataPoint(data2.getInt(4), data2.getDouble(5));
+            dataPointAccelY[countData] = new DataPoint(data2.getInt(4), data2.getDouble(6));
+            dataPointAccelZ[countData] = new DataPoint(data2.getInt(4), data2.getDouble(7));
+
 //            dataPointGyroX[countData] = new DataPoint(countData, data2.getDouble(8));
 //            dataPointGyroY[countData] = new DataPoint(countData, data2.getDouble(9));
 //            dataPointGyroZ[countData] = new DataPoint(countData, data2.getDouble(10));
-//            countData++;
-//        }
-//
-//        data2.close();
-//
-//        LineGraphSeries<DataPoint> seriesAccelX = new LineGraphSeries<DataPoint>(dataPointAccelX);
-//        LineGraphSeries<DataPoint> seriesAccelY = new LineGraphSeries<DataPoint>(dataPointAccelY);
-//        //seriesAccelY.setColor(Color.RED);
-//        LineGraphSeries<DataPoint> seriesAccelZ = new LineGraphSeries<DataPoint>(dataPointAccelZ);
-//        //seriesAccelZ.setColor(Color.GREEN);
-//
-//        graph2.addSeries(seriesAccelX);
-//        graph2.addSeries(seriesAccelY);
-//        graph2.addSeries(seriesAccelZ);
-//
+            countData++;
+        }
+
+        data2.close();
+        databaseHelper.close();
+
+        LineGraphSeries<DataPoint> seriesAccelX = new LineGraphSeries<DataPoint>(dataPointAccelX);
+        LineGraphSeries<DataPoint> seriesAccelY = new LineGraphSeries<DataPoint>(dataPointAccelY);
+        seriesAccelY.setColor(Color.RED);
+        LineGraphSeries<DataPoint> seriesAccelZ = new LineGraphSeries<DataPoint>(dataPointAccelZ);
+        seriesAccelZ.setColor(Color.GREEN);
+
+        graph2.addSeries(seriesAccelX);
+        graph2.addSeries(seriesAccelY);
+        graph2.addSeries(seriesAccelZ);
+
 //        LineGraphSeries<DataPoint> seriesGyroX = new LineGraphSeries<DataPoint>(dataPointGyroX);
 //        seriesGyroX.setColor(Color.RED);
 //        LineGraphSeries<DataPoint> seriesGyroY = new LineGraphSeries<DataPoint>(dataPointGyroY);
 //        seriesGyroY.setColor(Color.RED);
 //        LineGraphSeries<DataPoint> seriesGyroZ = new LineGraphSeries<DataPoint>(dataPointGyroZ);
 //        seriesGyroZ.setColor(Color.RED);
-//
+
 //        graph2.addSeries(seriesGyroX);
 //        graph2.addSeries(seriesGyroY);
 //        graph2.addSeries(seriesGyroZ);
-//
-//        graph2.getViewport().setScalable(true);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        graph2.getViewport().setScalable(true);
 
+        ////////////////////////////////////////////////SKOMPENSOWANE///////////////////////////////////////////////////////
+        DatabaseHelperFinalData databaseHelperFinalData = new DatabaseHelperFinalData(this);
+        Cursor data3 = databaseHelperFinalData.getData(IDinSQL);
+        GraphView graph3 = findViewById(R.id.graph3);
 
+        DataPoint[] dataPointAccelCompensatedX = new DataPoint[data3.getCount()];
+        DataPoint[] dataPointAccelCompensatedY = new DataPoint[data3.getCount()];
+        DataPoint[] dataPointAccelCompensatedZ = new DataPoint[data3.getCount()];
+
+        countData = 0;
+
+        while(data3.moveToNext())
+        {
+            dataPointAccelCompensatedX[countData] = new DataPoint(data3.getInt(4), data3.getDouble(5));
+            dataPointAccelCompensatedY[countData] = new DataPoint(data3.getInt(4), data3.getDouble(6));
+            dataPointAccelCompensatedZ[countData] = new DataPoint(data3.getInt(4), data3.getDouble(7));
+
+            countData++;
+        }
+
+        data3.close();
+        databaseHelperFinalData.close();
+
+        LineGraphSeries<DataPoint> seriesAccelCompensatedX = new LineGraphSeries<DataPoint>(dataPointAccelCompensatedX);
+        LineGraphSeries<DataPoint> seriesAccelCompensatedY = new LineGraphSeries<DataPoint>(dataPointAccelCompensatedY);
+        seriesAccelCompensatedY.setColor(Color.RED);
+        LineGraphSeries<DataPoint> seriesAccelCompensatedZ = new LineGraphSeries<DataPoint>(dataPointAccelCompensatedZ);
+        seriesAccelCompensatedZ.setColor(Color.GREEN);
+
+        graph3.addSeries(seriesAccelCompensatedX);
+        graph3.addSeries(seriesAccelCompensatedY);
+        graph3.addSeries(seriesAccelCompensatedZ);
+
+        graph3.getViewport().setScalable(true);
 
     }
 

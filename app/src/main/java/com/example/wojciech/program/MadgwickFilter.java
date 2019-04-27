@@ -12,8 +12,8 @@ public class MadgwickFilter
     //---------------------------------------------------------------------------------------------------
 // Definitions
 
-    private double sampleFreq = 5.0f;		// sample frequency in Hz
-    private double betaDef = 10f;		// 2 * proportional gain
+    private double sampleFreq = 10.0f;		// sample frequency in Hz
+    private double betaDef = 0.5f;		// 2 * proportional gain
 
 //---------------------------------------------------------------------------------------------------
 // Variable definitions
@@ -239,7 +239,7 @@ public class MadgwickFilter
 // Fast inverse square-root
 // See: http://en.wikipedia.org/wiki/Fast_inverse_square_root
 
-    public static double invSqrt(double x) {
+    private static double invSqrt(double x) {
         double xhalf = 0.5d * x;
         long i = Double.doubleToLongBits(x);
         i = 0x5fe6ec85e7de30daL - (i >> 1);
@@ -265,6 +265,11 @@ public class MadgwickFilter
     {
         double psi = Math.atan2(R21, R11 );
         return psi*180/Math.PI;
+    }
+
+    public double[] getQuaternions()
+    {
+        return new double[]{q0, q1, q2, q3};
     }
 
 //    // STALE
