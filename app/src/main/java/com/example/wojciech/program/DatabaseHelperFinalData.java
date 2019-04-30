@@ -65,6 +65,9 @@ public class DatabaseHelperFinalData extends SQLiteOpenHelper
      */
     private static String COL7_ACCZ = "accz";
 
+    /** Nazwa kolumny 9 - przyspieszenie z usunieta grawitacja w osi x */
+    private static String COL8_STATIC_INTERVAL = "static";
+
 //    /** Nazwa kolumny 6 - przyspieszenie z usunieta grawitacja w osi x */
 //    private static String COL8_ACCX = "velx";
 //
@@ -100,7 +103,8 @@ public class DatabaseHelperFinalData extends SQLiteOpenHelper
                 COL4_CONTROL_NR + " INTEGER, " +
                 COL5_ACCX + " REAL, " +
                 COL6_ACCY + " REAL, " +
-                COL7_ACCZ + " REAL)";
+                COL7_ACCZ + " REAL, " +
+                COL8_STATIC_INTERVAL + " INTEGER)";
 
         sqLiteDatabase.execSQL(createTable);
 
@@ -123,7 +127,7 @@ public class DatabaseHelperFinalData extends SQLiteOpenHelper
      * @param compensatedAcc - przyspieszenie w osi x, y, z
      * @return - prawda gdy dodane poprawnie, w innym wypadku falsz
      */
-    public boolean addData(long IDofExercise, String nameOfExercise, String date, int controlNumber, double[] compensatedAcc)
+    public boolean addData(long IDofExercise, String nameOfExercise, String date, int controlNumber, double[] compensatedAcc, int staticInterval)
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -135,6 +139,7 @@ public class DatabaseHelperFinalData extends SQLiteOpenHelper
         contentValues.put(COL5_ACCX, compensatedAcc[0]);
         contentValues.put(COL6_ACCY, compensatedAcc[1]);
         contentValues.put(COL7_ACCZ, compensatedAcc[2]);
+        contentValues.put(COL8_STATIC_INTERVAL, staticInterval);
 
         long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
 

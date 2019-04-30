@@ -174,9 +174,9 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
         DatabaseHelperFinalData databaseHelperFinalData = new DatabaseHelperFinalData(context);
         MadgwickFilter madgwickFilter = new MadgwickFilter();
         int IDofExercise = databaseHelper.getLargestID();
-
         boolean first = true;
 
+        ZeroVelocityUpdate zeroVelocity = new ZeroVelocityUpdate();
 
         Cursor data = databaseHelper.getData(IDofExercise);
         double yawAngle, pitchAngle, rollAngle;
@@ -190,6 +190,7 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
                 first = false;
             }
 
+            //Filtracja filtrem Madgwicka
             madgwickFilter.filterUpdatedouble(data.getDouble(5), data.getDouble(6), data.getDouble(7),
                     data.getDouble(8), data.getDouble(9), data.getDouble(10),
                     data.getDouble(11), data.getDouble(12), data.getDouble(13));
@@ -201,12 +202,22 @@ public class DatabaseHelperRPY extends SQLiteOpenHelper
 
             addData(IDofExercise, data.getString(2), data.getInt(4) - firstControlNr, yawAngle, pitchAngle, rollAngle);
 
+            //Kompensacja grawitacji
             double []compensatedGravity = GravityCompensation.CompensateGravity
                     (new double[]{data.getDouble(5), data.getDouble(6), data.getDouble(7)},
                             madgwickFilter.getQuaternions());
 
-            databaseHelperFinalData.addData(IDofExercise, data.getString(2), data.getString(3),
-                    data.getInt(4) - firstControlNr, compensatedGravity);
+            //Detekcja stanu statycznego
+            if(zeroVelocity.zeroVelocityUpdate(compensatedGravity, new double[]{data.getDouble(8), data.getDouble(9), data.getDouble(10)}))
+            {
+                databaseHelperFinalData.addData(IDofExercise, data.getString(2), data.getString(3),
+                        data.getInt(4) - firstControlNr, compensatedGravity, 1);
+            }
+            else
+            {
+                databaseHelperFinalData.addData(IDofExercise, data.getString(2), data.getString(3),
+                        data.getInt(4) - firstControlNr, compensatedGravity, 0);
+            }
         }
 
         data.close();

@@ -12,9 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +21,6 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.util.ArrayList;
 
 /**
  * Klasa sluzaca do wyswietlenia wszystkich danych pomiarowych posiadajacych okreslony ID,
@@ -168,21 +165,28 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         DataPoint[] dataPointAccelY = new DataPoint[data2.getCount()];
         DataPoint[] dataPointAccelZ = new DataPoint[data2.getCount()];
 
-//        DataPoint[] dataPointGyroX = new DataPoint[data2.getCount()];
-//        DataPoint[] dataPointGyroY = new DataPoint[data2.getCount()];
-//        DataPoint[] dataPointGyroZ = new DataPoint[data2.getCount()];
+        DataPoint[] dataPointGyroX = new DataPoint[data2.getCount()];
+        DataPoint[] dataPointGyroY = new DataPoint[data2.getCount()];
+        DataPoint[] dataPointGyroZ = new DataPoint[data2.getCount()];
 
         countData = 0;
+        int firstControlNr = 1;
 
         while(data2.moveToNext())
         {
-            dataPointAccelX[countData] = new DataPoint(data2.getInt(4), data2.getDouble(5));
-            dataPointAccelY[countData] = new DataPoint(data2.getInt(4), data2.getDouble(6));
-            dataPointAccelZ[countData] = new DataPoint(data2.getInt(4), data2.getDouble(7));
+            if(first)
+            {
+                firstControlNr = data2.getInt(4);
+                first = false;
+            }
 
-//            dataPointGyroX[countData] = new DataPoint(countData, data2.getDouble(8));
-//            dataPointGyroY[countData] = new DataPoint(countData, data2.getDouble(9));
-//            dataPointGyroZ[countData] = new DataPoint(countData, data2.getDouble(10));
+            dataPointAccelX[countData] = new DataPoint(data2.getInt(4) - firstControlNr, data2.getDouble(5));
+            dataPointAccelY[countData] = new DataPoint(data2.getInt(4) - firstControlNr, data2.getDouble(6));
+            dataPointAccelZ[countData] = new DataPoint(data2.getInt(4) - firstControlNr, data2.getDouble(7));
+
+            dataPointGyroX[countData] = new DataPoint(data2.getInt(4) - firstControlNr, data2.getDouble(8));
+            dataPointGyroY[countData] = new DataPoint(data2.getInt(4) - firstControlNr, data2.getDouble(9));
+            dataPointGyroZ[countData] = new DataPoint(data2.getInt(4) - firstControlNr, data2.getDouble(10));
             countData++;
         }
 
@@ -199,16 +203,16 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         graph2.addSeries(seriesAccelY);
         graph2.addSeries(seriesAccelZ);
 
-//        LineGraphSeries<DataPoint> seriesGyroX = new LineGraphSeries<DataPoint>(dataPointGyroX);
-//        seriesGyroX.setColor(Color.RED);
-//        LineGraphSeries<DataPoint> seriesGyroY = new LineGraphSeries<DataPoint>(dataPointGyroY);
-//        seriesGyroY.setColor(Color.RED);
-//        LineGraphSeries<DataPoint> seriesGyroZ = new LineGraphSeries<DataPoint>(dataPointGyroZ);
-//        seriesGyroZ.setColor(Color.RED);
+        LineGraphSeries<DataPoint> seriesGyroX = new LineGraphSeries<DataPoint>(dataPointGyroX);
+        seriesGyroX.setColor(Color.BLACK);
+        LineGraphSeries<DataPoint> seriesGyroY = new LineGraphSeries<DataPoint>(dataPointGyroY);
+        seriesGyroY.setColor(Color.BLACK);
+        LineGraphSeries<DataPoint> seriesGyroZ = new LineGraphSeries<DataPoint>(dataPointGyroZ);
+        seriesGyroZ.setColor(Color.BLACK);
 
-//        graph2.addSeries(seriesGyroX);
-//        graph2.addSeries(seriesGyroY);
-//        graph2.addSeries(seriesGyroZ);
+        graph2.addSeries(seriesGyroX);
+        graph2.addSeries(seriesGyroY);
+        graph2.addSeries(seriesGyroZ);
 
         graph2.getViewport().setScalable(true);
 
@@ -220,6 +224,7 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         DataPoint[] dataPointAccelCompensatedX = new DataPoint[data3.getCount()];
         DataPoint[] dataPointAccelCompensatedY = new DataPoint[data3.getCount()];
         DataPoint[] dataPointAccelCompensatedZ = new DataPoint[data3.getCount()];
+        DataPoint[] dataPointStaticIntervals = new DataPoint[data3.getCount()];
 
         countData = 0;
 
@@ -228,6 +233,7 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
             dataPointAccelCompensatedX[countData] = new DataPoint(data3.getInt(4), data3.getDouble(5));
             dataPointAccelCompensatedY[countData] = new DataPoint(data3.getInt(4), data3.getDouble(6));
             dataPointAccelCompensatedZ[countData] = new DataPoint(data3.getInt(4), data3.getDouble(7));
+            dataPointStaticIntervals[countData] = new DataPoint(data3.getInt(4), data3.getDouble(8));
 
             countData++;
         }
@@ -240,10 +246,13 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         seriesAccelCompensatedY.setColor(Color.RED);
         LineGraphSeries<DataPoint> seriesAccelCompensatedZ = new LineGraphSeries<DataPoint>(dataPointAccelCompensatedZ);
         seriesAccelCompensatedZ.setColor(Color.GREEN);
+        LineGraphSeries<DataPoint> seriesStaticIntervals = new LineGraphSeries<DataPoint>(dataPointStaticIntervals);
+        seriesStaticIntervals.setColor(Color.BLACK);
 
         graph3.addSeries(seriesAccelCompensatedX);
         graph3.addSeries(seriesAccelCompensatedY);
         graph3.addSeries(seriesAccelCompensatedZ);
+        graph3.addSeries(seriesStaticIntervals);
 
         graph3.getViewport().setScalable(true);
 
