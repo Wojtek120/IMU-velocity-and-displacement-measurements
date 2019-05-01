@@ -277,6 +277,41 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
 
         graph4.getViewport().setScalable(true);
 
+        ////////////////////////////////////////////////PREDKOSCI SKOMPENSOWANE///////////////////////////////////////////////////////
+        DatabaseHelperFinalData databaseHelperFinalData = new DatabaseHelperFinalData(this);
+        Cursor data4 = databaseHelperFinalData.getData(IDinSQL);
+        GraphView graph5 = findViewById(R.id.graph5);
+
+        DataPoint[] dataPointVelCompensatedX = new DataPoint[data4.getCount()];
+        DataPoint[] dataPointVelCompensatedY = new DataPoint[data4.getCount()];
+        DataPoint[] dataPointVelCompensatedZ = new DataPoint[data4.getCount()];
+
+        countData = 0;
+
+        while(data4.moveToNext())
+        {
+            dataPointVelCompensatedX[countData] = new DataPoint(data4.getInt(4), data4.getDouble(5));
+            dataPointVelCompensatedY[countData] = new DataPoint(data4.getInt(4), data4.getDouble(6));
+            dataPointVelCompensatedZ[countData] = new DataPoint(data4.getInt(4), data4.getDouble(7));
+
+            countData++;
+        }
+
+        data4.close();
+        databaseHelperFinalData.close();
+
+
+        LineGraphSeries<DataPoint> seriesVelCompensatedX = new LineGraphSeries<DataPoint>(dataPointVelCompensatedX);
+        LineGraphSeries<DataPoint> seriesVelCompensatedY = new LineGraphSeries<DataPoint>(dataPointVelCompensatedY);
+        seriesVelCompensatedY.setColor(Color.RED);
+        LineGraphSeries<DataPoint> seriesVelCompensatedZ = new LineGraphSeries<DataPoint>(dataPointVelCompensatedZ);
+        seriesVelCompensatedZ.setColor(Color.GREEN);
+
+        graph5.addSeries(seriesVelCompensatedX);
+        graph5.addSeries(seriesVelCompensatedY);
+        graph5.addSeries(seriesVelCompensatedZ);
+
+        graph5.getViewport().setScalable(true);
     }
 
 

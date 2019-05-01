@@ -7,23 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.sql.Timestamp;
-
-/**
- * Klasa odpowiedzialna za obsluge wpisow koncowych danych do bazy SQLite,
- * w niej baza jest tworzona i wysylane sa zapytania do niej
- */
-public class DatabaseHelperProcessedData extends SQLiteOpenHelper
+public class DatabaseHelperFinalData extends SQLiteOpenHelper
 {
-    /**
-     * TAG
-     */
-    private static final String TAG = "DatabaseHelperRPY";
-
     /**
      * Nazwa bazy danych
      */
-    private static final String TABLE_NAME = "ProcessedData";
+    private static final String TABLE_NAME = "FinalData";
 
     /**
      * Nazwa kolumny 1 - nr kolumny
@@ -51,46 +40,39 @@ public class DatabaseHelperProcessedData extends SQLiteOpenHelper
     private static String COL4_CONTROL_NR = "control_nr_1";
 
     /**
-     * Nazwa kolumny 6 - przyspieszenie z usunieta grawitacja w osi x
+     * Nazwa kolumny 6 - skompensowana predkosc w osi x
      */
-    private static String COL5_ACCX = "accx";
+    private static String COL5_VELX = "velx";
 
     /**
-     * Nazwa kolumny 7 - przyspieszenie z usunieta grawitacja w osi y
+     * Nazwa kolumny 7 - skompensowana predkosc w osi y
      */
-    private static String COL6_ACCY = "accy";
+    private static String COL6_VELY = "vely";
 
     /**
-     * Nazwa kolumny 8 - przyspieszenie z usunieta grawitacja w osi z
+     * Nazwa kolumny 8 - skompensowana predkosc w osi z
      */
-    private static String COL7_ACCZ = "accz";
-
-    /** Nazwa kolumny 9 - przyspieszenie z usunieta grawitacja w osi x */
-    private static String COL8_STATIC_INTERVAL = "static";
+    private static String COL7_VELZ = "velz";
 
     /**
-     * Nazwa kolumny 10 - predkosc w osi x
+     * Nazwa kolumny 9 - predkosc wypadkowa
      */
-    private static String COL9_VELX = "velx";
+    private static String COL8_VEL_NORM = "velnorm";
 
     /**
-     * Nazwa kolumny 11 - predkosc w osi y
+     * Nazwa kolumny 10 - przemieszczenie w osi x
      */
-    private static String COL10_VELY = "vely";
+    private static String COL9_DISPX = "dispx";
 
     /**
-     * Nazwa kolumny 12 - predkosc w osi z
+     * Nazwa kolumny 11 - przemieszczenie w osi y
      */
-    private static String COL11_VELZ = "velz";
+    private static String COL10_DISPY = "dispy";
 
-//    /** Nazwa kolumny 6 - przyspieszenie z usunieta grawitacja w osi x */
-//    private static String COL8_ACCX = "velx";
-//
-//    /** Nazwa kolumny 7 - przyspieszenie z usunieta grawitacja w osi y */
-//    private static String COL9_ACCY = "vely";
-//
-//    /** Nazwa kolumny 8 - przyspieszenie z usunieta grawitacja w osi z */
-//    private static String COL10ACCZ = "velz";
+    /**
+     * Nazwa kolumny 12 - przemieszczenie w osi z
+     */
+    private static String COL11_DISPZ = "dispz";
 
     /**
      * Kontekst
@@ -102,11 +84,12 @@ public class DatabaseHelperProcessedData extends SQLiteOpenHelper
      *
      * @param context - kontekst
      */
-    public DatabaseHelperProcessedData(Context context)
+    public DatabaseHelperFinalData(Context context)
     {
         super(context, TABLE_NAME, null, 1);
         this.context = context;
     }
+
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase)
@@ -116,13 +99,13 @@ public class DatabaseHelperProcessedData extends SQLiteOpenHelper
                 COL2_EXERCISE + " TEXT, " +
                 COL3_TIME + " DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f')), " +
                 COL4_CONTROL_NR + " INTEGER, " +
-                COL5_ACCX + " REAL, " +
-                COL6_ACCY + " REAL, " +
-                COL7_ACCZ + " REAL, " +
-                COL8_STATIC_INTERVAL + " INTEGER, " +
-                COL9_VELX + " REAL, " +
-                COL10_VELY + " REAL, " +
-                COL11_VELZ + " REAL)";
+                COL5_VELX + " REAL, " +
+                COL6_VELY + " REAL, " +
+                COL7_VELZ + " REAL, " +
+                COL8_VEL_NORM + " REAL, " +
+                COL9_DISPX + " REAL, " +
+                COL10_DISPY + " REAL, " +
+                COL11_DISPZ + " REAL)";
 
         sqLiteDatabase.execSQL(createTable);
 
@@ -140,13 +123,10 @@ public class DatabaseHelperProcessedData extends SQLiteOpenHelper
      *
      * @param IDofExercise   - id cwiczenia
      * @param nameOfExercise - nazwa cwiczenia
-     * @param date           - data
      * @param controlNumber  - numer kontrolny
-     * @param compensatedAcc - przyspieszenie w osi x, y, z
      * @return - prawda gdy dodane poprawnie, w innym wypadku falsz
      */
-    public boolean addData(long IDofExercise, String nameOfExercise, String date, int controlNumber,
-                           double[] compensatedAcc, int staticInterval, double[] velocity)
+    public boolean addData(long IDofExercise, String nameOfExercise, String date, int controlNumber, double[] velocity, double[] displacement)
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -155,19 +135,18 @@ public class DatabaseHelperProcessedData extends SQLiteOpenHelper
         contentValues.put(COL2_EXERCISE, nameOfExercise);
         contentValues.put(COL3_TIME, date);
         contentValues.put(COL4_CONTROL_NR, controlNumber);
-        contentValues.put(COL5_ACCX, compensatedAcc[0]);
-        contentValues.put(COL6_ACCY, compensatedAcc[1]);
-        contentValues.put(COL7_ACCZ, compensatedAcc[2]);
-        contentValues.put(COL8_STATIC_INTERVAL, staticInterval);
-        contentValues.put(COL9_VELX, velocity[0]);
-        contentValues.put(COL10_VELY, velocity[1]);
-        contentValues.put(COL11_VELZ, velocity[2]);
+        contentValues.put(COL5_VELX, velocity[0]);
+        contentValues.put(COL6_VELY, velocity[1]);
+        contentValues.put(COL7_VELZ, velocity[2]);
+        contentValues.put(COL8_VEL_NORM, Math.sqrt(Math.pow(velocity[0],2) + Math.pow(velocity[1],2) + Math.pow(velocity[2],2)));
+        contentValues.put(COL9_DISPX, displacement[0]);
+        contentValues.put(COL10_DISPY, displacement[1]);
+        contentValues.put(COL11_DISPZ, displacement[2]);
 
         long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
 
         return !(result == -1);
     }
-
 
     /**
      * Zwraca dane z bazy
@@ -202,7 +181,6 @@ public class DatabaseHelperProcessedData extends SQLiteOpenHelper
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         String query = "UPDATE " + TABLE_NAME + " SET " + COL2_EXERCISE + " = '" + newName +
                 "' WHERE " + COL1_ID + " = '" + id + "'";
-        Log.i(TAG, "updateName " + query);
 
         sqLiteDatabase.execSQL(query);
     }
@@ -217,9 +195,7 @@ public class DatabaseHelperProcessedData extends SQLiteOpenHelper
     {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
         String query = "DELETE FROM " + TABLE_NAME + " WHERE " + COL1_ID + " = '" + id + "'";
-        Log.i(TAG, "updateName " + query);
 
         sqLiteDatabase.execSQL(query);
     }
-
 }
