@@ -144,8 +144,8 @@ public class MainActivity extends AppCompatActivity
                         Thread t = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                DatabaseHelperRPY databaseHelperRPY = new DatabaseHelperRPY(getApplicationContext());
-                                databaseHelperRPY.calculateRPYandCompensateGravity();
+                                DataProcessing dataProcessing = new DataProcessing(getApplicationContext());
+                                dataProcessing.processData();
                                 dialogWindowHandler.sendEmptyMessage(0);
                             }});
 

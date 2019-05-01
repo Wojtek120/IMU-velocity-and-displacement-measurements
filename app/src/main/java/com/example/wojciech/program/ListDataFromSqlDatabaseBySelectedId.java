@@ -217,14 +217,19 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         graph2.getViewport().setScalable(true);
 
         ////////////////////////////////////////////////SKOMPENSOWANE///////////////////////////////////////////////////////
-        DatabaseHelperFinalData databaseHelperFinalData = new DatabaseHelperFinalData(this);
-        Cursor data3 = databaseHelperFinalData.getData(IDinSQL);
+        DatabaseHelperProcessedData databaseHelperProcessedData = new DatabaseHelperProcessedData(this);
+        Cursor data3 = databaseHelperProcessedData.getData(IDinSQL);
         GraphView graph3 = findViewById(R.id.graph3);
+        GraphView graph4 = findViewById(R.id.graph4);
 
         DataPoint[] dataPointAccelCompensatedX = new DataPoint[data3.getCount()];
         DataPoint[] dataPointAccelCompensatedY = new DataPoint[data3.getCount()];
         DataPoint[] dataPointAccelCompensatedZ = new DataPoint[data3.getCount()];
         DataPoint[] dataPointStaticIntervals = new DataPoint[data3.getCount()];
+
+        DataPoint[] dataPointVelX = new DataPoint[data3.getCount()];
+        DataPoint[] dataPointVelY = new DataPoint[data3.getCount()];
+        DataPoint[] dataPointVelZ = new DataPoint[data3.getCount()];
 
         countData = 0;
 
@@ -235,11 +240,15 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
             dataPointAccelCompensatedZ[countData] = new DataPoint(data3.getInt(4), data3.getDouble(7));
             dataPointStaticIntervals[countData] = new DataPoint(data3.getInt(4), data3.getDouble(8));
 
+            dataPointVelX[countData] = new DataPoint(data3.getInt(4), data3.getDouble(9));
+            dataPointVelY[countData] = new DataPoint(data3.getInt(4), data3.getDouble(10));
+            dataPointVelZ[countData] = new DataPoint(data3.getInt(4), data3.getDouble(11));
+
             countData++;
         }
 
         data3.close();
-        databaseHelperFinalData.close();
+        databaseHelperProcessedData.close();
 
         LineGraphSeries<DataPoint> seriesAccelCompensatedX = new LineGraphSeries<DataPoint>(dataPointAccelCompensatedX);
         LineGraphSeries<DataPoint> seriesAccelCompensatedY = new LineGraphSeries<DataPoint>(dataPointAccelCompensatedY);
@@ -255,6 +264,18 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         graph3.addSeries(seriesStaticIntervals);
 
         graph3.getViewport().setScalable(true);
+
+        LineGraphSeries<DataPoint> seriesVelX = new LineGraphSeries<DataPoint>(dataPointVelX);
+        LineGraphSeries<DataPoint> seriesVelY = new LineGraphSeries<DataPoint>(dataPointVelY);
+        seriesVelY.setColor(Color.RED);
+        LineGraphSeries<DataPoint> seriesVelZ = new LineGraphSeries<DataPoint>(dataPointVelZ);
+        seriesVelZ.setColor(Color.GREEN);
+
+        graph4.addSeries(seriesVelX);
+        graph4.addSeries(seriesVelY);
+        graph4.addSeries(seriesVelZ);
+
+        graph4.getViewport().setScalable(true);
 
     }
 
