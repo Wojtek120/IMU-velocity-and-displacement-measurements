@@ -145,6 +145,10 @@ public class DataProcessing
 
         Cursor data = databaseHelperProcessedData.getData(IDofExercise);
 
+        Integral integralDisplacementX = new Integral();
+        Integral integralDisplacementY = new Integral();
+        Integral integralDisplacementZ = new Integral();
+
         boolean first = true;
         boolean previousState = false;
 
@@ -191,14 +195,22 @@ public class DataProcessing
                 first = false;
             }
 
-            if(data.getInt(8) == 1)
+            if(data.getInt(8) == 1 && !data.isLast())
             {
+                data.moveToNext();
+                double nextTime = data.getInt(4);
+                data.moveToPrevious();
+
+                double displacementX = integralDisplacementX.integrate(data.getInt(4), nextTime, 0, 0);
+                double displacementY = integralDisplacementY.integrate(data.getInt(4), nextTime, 0, 0);
+                double displacementZ = integralDisplacementZ.integrate(data.getInt(4), nextTime, 0, 0);
+
                 databaseHelperFinalData.addData(IDofExercise, data.getString(2), data.getString(3),
-                        data.getInt(4), new double[]{0, 0, 0});
+                        data.getInt(4), new double[]{0, 0, 0}, new double[]{displacementX, displacementY, displacementZ});
 
                 previousState = true;
             }
-            else
+            else if(!data.isLast())
             {
                 if(previousState)
                 {
@@ -225,10 +237,25 @@ public class DataProcessing
 
                 previousState = false;
 
+                //calkowanie
+                double []CompensatedVelocity = new double[]{data.getDouble(9) - linearFunction(xX, yX, data.getInt(4)),
+                        data.getDouble(10) - linearFunction(xY, yY, data.getInt(4)),
+                        data.getDouble(11) - linearFunction(xZ, yZ, data.getInt(4))};
+                data.moveToNext();
+                double nextTime = data.getInt(4);
+                double []nextCompensatedVelocity = new double[]{data.getDouble(9) - linearFunction(xX, yX, data.getInt(4)),
+                        data.getDouble(10) - linearFunction(xY, yY, data.getInt(4)),
+                        data.getDouble(11) - linearFunction(xZ, yZ, data.getInt(4))};
+                data.moveToPrevious();
+
+                double displacementX = integralDisplacementX.integrate(data.getInt(4), nextTime, CompensatedVelocity[0], nextCompensatedVelocity[0]);
+                double displacementY = integralDisplacementY.integrate(data.getInt(4), nextTime, CompensatedVelocity[1], nextCompensatedVelocity[1]);
+                double displacementZ = integralDisplacementZ.integrate(data.getInt(4), nextTime, CompensatedVelocity[2], nextCompensatedVelocity[2]);
+
+
+
                 databaseHelperFinalData.addData(IDofExercise, data.getString(2), data.getString(3), data.getInt(4),
-                        new double[]{data.getDouble(9) - linearFunction(xX, yX, data.getInt(4)),
-                                data.getDouble(10) - linearFunction(xY, yY, data.getInt(4)),
-                                data.getDouble(11) - linearFunction(xZ, yZ, data.getInt(4))});
+                        CompensatedVelocity, new double[]{displacementX, displacementY, displacementZ});
 
             }
         }

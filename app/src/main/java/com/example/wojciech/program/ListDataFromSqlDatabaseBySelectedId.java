@@ -281,10 +281,15 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         DatabaseHelperFinalData databaseHelperFinalData = new DatabaseHelperFinalData(this);
         Cursor data4 = databaseHelperFinalData.getData(IDinSQL);
         GraphView graph5 = findViewById(R.id.graph5);
+        GraphView graph6 = findViewById(R.id.graph6);
 
         DataPoint[] dataPointVelCompensatedX = new DataPoint[data4.getCount()];
         DataPoint[] dataPointVelCompensatedY = new DataPoint[data4.getCount()];
         DataPoint[] dataPointVelCompensatedZ = new DataPoint[data4.getCount()];
+
+        DataPoint[] dataDisplacementX = new DataPoint[data4.getCount()];
+        DataPoint[] dataDisplacementY = new DataPoint[data4.getCount()];
+        DataPoint[] dataDisplacementZ = new DataPoint[data4.getCount()];
 
         countData = 0;
 
@@ -293,6 +298,10 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
             dataPointVelCompensatedX[countData] = new DataPoint(data4.getInt(4), data4.getDouble(5));
             dataPointVelCompensatedY[countData] = new DataPoint(data4.getInt(4), data4.getDouble(6));
             dataPointVelCompensatedZ[countData] = new DataPoint(data4.getInt(4), data4.getDouble(7));
+
+            dataDisplacementX[countData] = new DataPoint(data4.getInt(4), data4.getDouble(9));
+            dataDisplacementY[countData] = new DataPoint(data4.getInt(4), data4.getDouble(10));
+            dataDisplacementZ[countData] = new DataPoint(data4.getInt(4), data4.getDouble(11));
 
             countData++;
         }
@@ -307,11 +316,23 @@ public class ListDataFromSqlDatabaseBySelectedId extends AppCompatActivity
         LineGraphSeries<DataPoint> seriesVelCompensatedZ = new LineGraphSeries<DataPoint>(dataPointVelCompensatedZ);
         seriesVelCompensatedZ.setColor(Color.GREEN);
 
+        LineGraphSeries<DataPoint> seriesDisplacementX = new LineGraphSeries<DataPoint>(dataDisplacementX);
+        LineGraphSeries<DataPoint> seriesDisplacementY = new LineGraphSeries<DataPoint>(dataDisplacementY);
+        seriesDisplacementY.setColor(Color.RED);
+        LineGraphSeries<DataPoint> seriesDisplacementZ = new LineGraphSeries<DataPoint>(dataDisplacementZ);
+        seriesDisplacementZ.setColor(Color.GREEN);
+
         graph5.addSeries(seriesVelCompensatedX);
         graph5.addSeries(seriesVelCompensatedY);
         graph5.addSeries(seriesVelCompensatedZ);
 
         graph5.getViewport().setScalable(true);
+
+        graph6.addSeries(seriesDisplacementX);
+        graph6.addSeries(seriesDisplacementY);
+        graph6.addSeries(seriesDisplacementZ);
+
+        graph6.getViewport().setScalable(true);
     }
 
 
