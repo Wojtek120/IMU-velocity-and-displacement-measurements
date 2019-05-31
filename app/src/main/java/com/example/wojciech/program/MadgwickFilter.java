@@ -6,22 +6,19 @@ import android.util.Log;
  * Klasa implementujaca filtr Madgwicka
  * na podstawie pracy:
  * S. O. H. Madgwick, "An efficient orientation filter for inertial and inertial/magnetic sensor arrays", 30.04.2010
+ * zrodlo: https://www.enib.fr/~kerhoas/rescapt_madgwick.html
  */
 public class MadgwickFilter
 {
-    //---------------------------------------------------------------------------------------------------
-// Definitions
 
-    private double sampleFreq = 10.0f;		// sample frequency in Hz
-    private double betaDef = 0.5f;		// 2 * proportional gain
-
-//---------------------------------------------------------------------------------------------------
-// Variable definitions
-
-    private double beta = betaDef;								// 2 * proportional gain (Kp)
-    private double q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;	// quaternion of sensor frame relative to auxiliary frame
-
-
+    /** Czestotliwosc probkowania */
+    private double sampleFreq = 10.0f;
+    /** Parametr beta */
+    private double betaDef = 0.5f;
+    /** Kp - 2*wzmocnienie */
+    private double beta = betaDef;
+    /** Lwaternionowa reprezentacja orientacji sensora w stosunku do zewnetrznego ukladu */
+    private double q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;
 
     private double R11;
     private double R21;
@@ -37,15 +34,18 @@ public class MadgwickFilter
     }
 
 
-
-
-
-//====================================================================================================
-// Functions
-
-//---------------------------------------------------------------------------------------------------
-// AHRS algorithm update
-
+    /**
+     * Funkcja do obliczenia jednej iteracji filtra
+     * @param ax - pomiar akcelerometru w osi y
+     * @param ay - pomiar akcelerometru w osi y
+     * @param az - pomiar akcelerometru w osi z
+     * @param gx - pomiar zyroskopu w osi x
+     * @param gy - pomiar zyroskopu w osi y
+     * @param gz - pomiar zyroskopu w osi z
+     * @param mx - pomiar magnetometru w osi x
+     * @param my - pomiar magnetometru w osi y
+     * @param mz - pomiar magnetometru w osi z
+     */
     public void filterUpdatedouble(double ax, double ay, double az, double gx, double gy, double gz,  double mx, double my, double mz) {
         double recipNorm;
         double s0, s1, s2, s3;
@@ -53,7 +53,7 @@ public class MadgwickFilter
         double hx, hy;
         double _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
 
-        // Use IMU algorithm if magnetometer measurement invalid (avoids NaN in magnetometer normalisation)
+        // Algorytm IMU gdy dane z magnetometru nieprawidlowe
         if((mx == 0.0f) && (my == 0.0f) && (mz == 0.0f)) {
             MadgwickAHRSupdateIMU(gx, gy, gz, ax, ay, az);
             return;
@@ -65,22 +65,22 @@ public class MadgwickFilter
         qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
         qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
 
-        // Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
+        // Oblicza gdy pomiar akcelerometru prawidlowy
         if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
 
-            // Normalise accelerometer measurement
+            // normalizacja pomiarow akcelerometrem
             recipNorm = invSqrt(ax * ax + ay * ay + az * az);
             ax *= recipNorm;
             ay *= recipNorm;
             az *= recipNorm;
 
-            // Normalise magnetometer measurement
+            //normalizacja pomiarow magnetometrem
             recipNorm = invSqrt(mx * mx + my * my + mz * mz);
             mx *= recipNorm;
             my *= recipNorm;
             mz *= recipNorm;
 
-            // Auxiliary variables to avoid repeated arithmetic
+            // Dodatkowe zmienne aby ich dwa razy nie liczyc
             _2q0mx = 2.0f * q0 * mx;
             _2q0my = 2.0f * q0 * my;
             _2q0mz = 2.0f * q0 * mz;
@@ -102,7 +102,7 @@ public class MadgwickFilter
             q2q3 = q2 * q3;
             q3q3 = q3 * q3;
 
-            // Reference direction of Earth's magnetic field
+            // referencyjny kierunek pola magnetycznego ziemii
             hx = mx * q0q0 - _2q0my * q3 + _2q0mz * q2 + mx * q1q1 + _2q1 * my * q2 + _2q1 * mz * q3 - mx * q2q2 - mx * q3q3;
             hy = _2q0mx * q3 + my * q0q0 - _2q0mz * q1 + _2q1mx * q2 - my * q1q1 + my * q2q2 + _2q2 * mz * q3 - my * q3q3;
             _2bx = Math.sqrt(hx * hx + hy * hy);
@@ -110,7 +110,7 @@ public class MadgwickFilter
             _4bx = 2.0f * _2bx;
             _4bz = 2.0f * _2bz;
 
-            // Gradient decent algorithm corrective step
+            // gradient prosty
             s0 = -_2q2 * (2.0f * q1q3 - _2q0q2 - ax) + _2q1 * (2.0f * q0q1 + _2q2q3 - ay) - _2bz * q2 * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (-_2bx * q3 + _2bz * q1) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + _2bx * q2 * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
             s1 = _2q3 * (2.0f * q1q3 - _2q0q2 - ax) + _2q0 * (2.0f * q0q1 + _2q2q3 - ay) - 4.0f * q1 * (1 - 2.0f * q1q1 - 2.0f * q2q2 - az) + _2bz * q3 * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (_2bx * q2 + _2bz * q0) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + (_2bx * q3 - _4bz * q1) * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
             s2 = -_2q0 * (2.0f * q1q3 - _2q0q2 - ax) + _2q3 * (2.0f * q0q1 + _2q2q3 - ay) - 4.0f * q2 * (1 - 2.0f * q1q1 - 2.0f * q2q2 - az) + (-_4bx * q2 - _2bz * q0) * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx) + (_2bx * q1 + _2bz * q3) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my) + (_2bx * q0 - _4bz * q2) * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
@@ -128,13 +128,13 @@ public class MadgwickFilter
             qDot4 -= beta * s3;
         }
 
-        // Integrate rate of change of quaternion to yield quaternion
+        //Calka zmien
         q0 += qDot1 * (1.0f / sampleFreq);
         q1 += qDot2 * (1.0f / sampleFreq);
         q2 += qDot3 * (1.0f / sampleFreq);
         q3 += qDot4 * (1.0f / sampleFreq);
 
-        // Normalise quaternion
+        // Narmalizacja kwaternionu
         recipNorm = invSqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
         q0 *= recipNorm;
         q1 *= recipNorm;
@@ -158,9 +158,15 @@ public class MadgwickFilter
         }
     }
 
-//---------------------------------------------------------------------------------------------------
-// IMU algorithm update
-
+    /**
+     * Algorytm IMU
+     *      @param ax - pomiar akcelerometru w osi y
+     *      @param ay - pomiar akcelerometru w osi y
+     *      @param az - pomiar akcelerometru w osi z
+     *      @param gx - pomiar zyroskopu w osi x
+     *      @param gy - pomiar zyroskopu w osi y
+     *      @param gz - pomiar zyroskopu w osi z
+     */
     public void MadgwickAHRSupdateIMU(double gx, double gy, double gz, double ax, double ay, double az) {
         double recipNorm;
         double s0, s1, s2, s3;
@@ -235,9 +241,11 @@ public class MadgwickFilter
         R33 = 2.*q0*q0 -1 +2.*q3*q3;
     }
 
-//---------------------------------------------------------------------------------------------------
-// Fast inverse square-root
-// See: http://en.wikipedia.org/wiki/Fast_inverse_square_root
+    /**
+     * Szybki odwrocony pierwiastek kwadratowy
+     * @param x - wartosc
+     * @return wynik
+     */
 
     private static double invSqrt(double x) {
         double xhalf = 0.5d * x;
@@ -248,6 +256,10 @@ public class MadgwickFilter
         return x;
     }
 
+    /**
+     * Zwroc kąt roll
+     * @return roll
+     */
     public double getRoll()
     {
         double phi = Math.atan2(R32, R33 );
@@ -255,18 +267,30 @@ public class MadgwickFilter
         return phi*180/Math.PI;
     }
 
+    /**
+     * Zwroc kąt pitch
+     * @return pitch
+     */
     public double getPitch()
     {
         double theta = -Math.atan(R31 / Math.sqrt(1-R31*R31) );
         return theta*180/Math.PI;
     }
 
+    /**
+     * Zwroc kąt yaw
+     * @return yaw
+     */
     public double getYaw()
     {
         double psi = Math.atan2(R21, R11 );
         return psi*180/Math.PI;
     }
 
+    /**
+     * Zwroc kwaterniony
+     * @return kwaterniony
+     */
     public double[] getQuaternions()
     {
         return new double[]{q0, q1, q2, q3};

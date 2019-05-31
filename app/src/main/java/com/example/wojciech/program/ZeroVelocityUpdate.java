@@ -1,5 +1,8 @@
 package com.example.wojciech.program;
 
+/**
+ * Klasa odpowiedzialna za detekcje stanu spoczynkowego urzadzenia
+ */
 public class ZeroVelocityUpdate
 {
     /* Prog liczby probek po ktorym urzadzenie ma zostac uzane, ze jest w spoczynku */

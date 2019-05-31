@@ -1,10 +1,22 @@
 package com.example.wojciech.program;
 
-
+/**
+ * Kompensacja grawitacji
+ * zrodlo: http://www.varesano.net/blog/fabio/simple-gravity-compensation-9-dom-imus
+ */
 public class GravityCompensation
 {
+    /**
+     * Stała grawitacji
+     */
         private static final double GRAVITY = 9.91;
 
+    /**
+     * Kompensacja grawitacji
+     * @param acc
+     * @param q
+     * @return
+     */
         public static double[] CompensateGravity(double acc[], double q[])
         {
             double g[] = new double[3];

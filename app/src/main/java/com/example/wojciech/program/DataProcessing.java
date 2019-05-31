@@ -6,6 +6,9 @@ import android.util.Pair;
 
 import java.util.Vector;
 
+/**
+ * Klasa w której są przetwarzane dany - z pomiarów pozyskiwane wyniki prędkości oraz przyspieszeń
+ */
 public class DataProcessing
 {
     /** Kontekst */
@@ -22,6 +25,10 @@ public class DataProcessing
 
     private int IDofExercise;
 
+    /**
+     * Konstruktor
+     * @param context - kontekst
+     */
     public DataProcessing(Context context)
     {
         this.context = context;
@@ -30,7 +37,9 @@ public class DataProcessing
         changeStateTimesZ = new Vector<>();
     }
 
-
+    /**
+     * Wczytanie danych i obliczanie orientacji, predkosci, kompensacja jej i przemieszczen
+     */
     public void processData()
     {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
@@ -52,6 +61,9 @@ public class DataProcessing
 
         boolean previousState = true;
 
+        double velocityX = 0;
+        double velocityY = 0;
+        double velocityZ = 0;
 
         while(data.moveToNext())
         {
@@ -90,9 +102,16 @@ public class DataProcessing
                 //Detekcja stanu statycznego
                 if (zeroVelocity.zeroVelocityUpdate(compensatedGravity, new double[]{data.getDouble(8), data.getDouble(9), data.getDouble(10)}))
                 {
-                    double velocityX = integralVelocityX.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[0], nextCompensatedGravity[0]);
-                    double velocityY = integralVelocityY.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[1], nextCompensatedGravity[1]);
-                    double velocityZ = integralVelocityZ.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[2], nextCompensatedGravity[2]);
+                    velocityX = integralVelocityX.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[0], nextCompensatedGravity[0]);
+                    velocityY = integralVelocityY.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[1], nextCompensatedGravity[1]);
+                    velocityZ = integralVelocityZ.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[2], nextCompensatedGravity[2]);
+
+//                    velocityX = 0;
+//                    velocityY = 0;
+//                    velocityZ = 0;
+//                    integralVelocityX.setToZero();
+//                    integralVelocityY.setToZero();
+//                    integralVelocityZ.setToZero();
 
                     //dodanie predkosci i czasow w momencie rozpoczecia ruchy
                     if(!previousState)
@@ -109,9 +128,10 @@ public class DataProcessing
 
                 } else
                 {
-                    double velocityX = integralVelocityX.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[0], nextCompensatedGravity[0]);
-                    double velocityY = integralVelocityY.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[1], nextCompensatedGravity[1]);
-                    double velocityZ = integralVelocityZ.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[2], nextCompensatedGravity[2]);
+                    velocityX = integralVelocityX.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[0], nextCompensatedGravity[0]);
+                    velocityY = integralVelocityY.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[1], nextCompensatedGravity[1]);
+                    velocityZ = integralVelocityZ.integrate(data.getInt(4) - firstControlNr, nextTime - firstControlNr, compensatedGravity[2], nextCompensatedGravity[2]);
+
 
                     //dodanie predkosci i czasow w momencie zakonczenia ruchy
                     if(previousState)
@@ -127,6 +147,25 @@ public class DataProcessing
                             new double[]{velocityX, velocityY, velocityZ});
                 }
             }
+
+            if(data.isLast())
+            {
+                if(changeStateTimesX.isEmpty())
+                {
+                    changeStateTimesX.add(new Pair<>(0, 0d));
+                    changeStateTimesY.add(new Pair<>(0, 0d));
+                    changeStateTimesZ.add(new Pair<>(0, 0d));
+                    changeStateTimesX.add(new Pair<>(data.getInt(4) - firstControlNr, velocityX));
+                    changeStateTimesY.add(new Pair<>(data.getInt(4) - firstControlNr, velocityY));
+                    changeStateTimesZ.add(new Pair<>(data.getInt(4) - firstControlNr, velocityZ));
+                }
+                else if(changeStateTimesX.size() % 2 == 1)
+                {
+                    changeStateTimesX.add(new Pair<>(data.getInt(4) - firstControlNr, velocityX));
+                    changeStateTimesY.add(new Pair<>(data.getInt(4) - firstControlNr, velocityY));
+                    changeStateTimesZ.add(new Pair<>(data.getInt(4) - firstControlNr, velocityZ));
+                }
+            }
         }
 
         data.close();
@@ -138,6 +177,9 @@ public class DataProcessing
 
     }
 
+    /**
+     * Kompensacji predkosci i obliczanie przemieszczen
+     */
     private void compensateVelocityAndComputeDisplacement()
     {
         DatabaseHelperProcessedData databaseHelperProcessedData = new DatabaseHelperProcessedData(context);
@@ -253,7 +295,9 @@ public class DataProcessing
                 double displacementZ = integralDisplacementZ.integrate(data.getInt(4), nextTime, CompensatedVelocity[2], nextCompensatedVelocity[2]);
 
 
-
+//                CompensatedVelocity[2] = linearFunction(xX, yX, data.getInt(4));
+//                databaseHelperFinalData.addData(IDofExercise, data.getString(2), data.getString(3), data.getInt(4),
+//                        CompensatedVelocity, new double[]{displacementX, displacementY, displacementZ});
                 databaseHelperFinalData.addData(IDofExercise, data.getString(2), data.getString(3), data.getInt(4),
                         CompensatedVelocity, new double[]{displacementX, displacementY, displacementZ});
 
@@ -265,6 +309,13 @@ public class DataProcessing
         databaseHelperProcessedData.close();
     }
 
+    /**
+     * Obliczenie wartosci funkcji liniowej na podstawie dwoch podanych punktow
+     * @param x - wspolrzedne x punktow
+     * @param y - wspolrzedne y punktow
+     * @param value - wpolrzedna x punktu do obliczenia jego wartosci
+     * @return wartosc y
+     */
     private double linearFunction(int[] x, double[] y, double value)
     {
         double a = (y[1] - y[0])/(x[1] - x[0]);
