@@ -8,7 +8,7 @@
   + [Calibration of sensors](#calibration)
   + [Libraries](#libraries)
   + [Connecting](#connecting)
-  + [Arduino program](#aprogram)
+  + [Arduino application](#aprogram)
 * [Measurement of speed and displacement](#measurement)
  + [Madgwick's filter](#madgwick)
  + [Compensation of gravitational acceleration](#compensation)
@@ -26,18 +26,18 @@
 ## General info
 The device was created while writing the master's thesis, thus all documentation are written in Polish.
 
-Arduino microcontroller was used to build the device. Special attention was given to use of a cheap inertial sensors (they were bought on AliExpress for a few dollars). Velocity and displacements are measured on the basis of accelerations obtained thanks to the accelerometer. Both - gyroscope and accelerometer - combined with a Madgwick's filter and ZVU filtering is used to reduce drift, which is characteristic error of the MEMS sensors. In addition, it occurs when integrating the acceleration.
+Arduino microcontroller was used to build the device. Special attention was given to use of a cheap inertial sensors (they were bought on AliExpress for a few dollars). Velocity and displacements are measured on the basis of accelerations obtained thanks to the accelerometer. Both - gyroscope and accelerometer - combined with a Madgwick's filter and ZVU filtering are used to reduce drift, which are characteristic error of the MEMS sensors. In addition, it occurs when integrating the acceleration.
 
-Additionaly phone application has been created to operate the device and read the measurement results. It allows the phone to connect to the device via bluetooth. After collecting measurement data, all calculations are performed in it. Data is saved in a local SQL database. The application allows you to see all records in the form of charts.
+Additionaly phone application has been created to operate the device and read the measurement results. It allows the phone to connect to the device via bluetooth. After collecting measurement data, all calculations are performed in it. Data is saved in a local SQL database. The application allows you to see all the records in the form of plots.
 
-At the end all components were soldered on breadboard and device case was designed and printed. Case allows you to mount the device on Olympic barbell.
+At the end all components were soldered on a breadboard and a device case was designed and printed. The case allows you to mount the device on an Olympic barbell.
 
 ![Device](./img/obudowazmikro.jpg)
 
 <a name="arduino"></a>
 ## Microcontroler (Arduino) and peripherals
 
-In this section i will describe all components i have used to build the device. I will also show how to put all things together.
+In this section I have described all components I have used to build the device. I have also shown how to put all things together.
 
 <a name="components"></a>
 ### Components
@@ -51,7 +51,7 @@ Due to the lack of devices used to sensors calibration, the method described in 
 
 <a name="libraries"></a>
 ### Libraries
-In order to use my program you need to download and include [MPU9250 library](https://github.com/Wojtek120/MPU9250). Link is to my fork, if you decide to download lib from [author](https://github.com/bolderflight) you need to change lines in .h file:
+In order to use my program you need to download and include [MPU9250 library](https://github.com/Wojtek120/MPU9250). Link directs to my fork, if you decide to download lib from [author](https://github.com/bolderflight) you need to change lines in .h file:
 ```c
 const int16_t tX[3] = {0,  1,  0};
 const int16_t tY[3] = {1,  0,  0};
@@ -67,7 +67,7 @@ You should also enter acceleration of gravity appropriate to the place where you
 
 <a name="connecting"></a>
 ### Connecting
-First of all you need to connect all pieces together just like on the picture below if you are using program from my GitHub. Bluetooth module goes through voltage level translator, because module works on 3.3V and Arduino on 5V. If you don't have one and don't want to buy it you can also make voltage divider so not to damage module.
+First of all you need to connect all pieces together just like on the picture below if you are using program from my GitHub. The Bluetooth module goes through voltage level translator, because the module works on 3.3V and Arduino on 5V. If you don't have one and don't want to buy it you can also make voltage divider so not to damage the module.
 
 ![Connection schema](./img/plytka.jpg)
 
@@ -87,11 +87,11 @@ Microcontroller during startup initiates software UART communication with a tran
 
 <a name="measurement"></a>
 ## Measurement of speed and displacement
-There's several steps must be completed in order to get actual speed and displacement of device. All of them are described in this chapter.
+Several steps must be completed so to get actual speed and displacement of device. All of them are described in this chapter.
 
 <a name="madgwick"></a>
 ### Madgwick's filter
-First of all it is necessarily to get orientation of device in order to compensate acceleration of gravity from measurements. There are three most popular ways to do this: Kalman Filter, complementary filter and Madgwick filter. Research indicates that last method has three basic advantages: low computational cost, high performance, even at low sampling frequency and is easy to tune. The report ["An efficient orientation filter for inertial and inertial/magnetic sensor arrays"](https://www.samba.org/tridge/UAV/madgwick_internal_report.pdf) published by Sebastian Madgwick in 2010 presents the theory and implementation of the proposed filter for IMU and MARG.
+First of all it is necessary to get orientation of device in order to compensate acceleration of gravity from measurements. There are three most popular ways to do this: Kalman Filter, complementary filter and Madgwick filter. Research indicates that last method has three basic advantages: low computational cost, high performance (even at low sampling frequency) and is easy to tune. The report ["An efficient orientation filter for inertial and inertial/magnetic sensor arrays"](https://www.samba.org/tridge/UAV/madgwick_internal_report.pdf) published by Sebastian Madgwick in 2010 presents the theory and implementation of the proposed filter for IMU and MARG.
 
 <a name="compensation"></a>
 ### Compensation of gravitational acceleration
@@ -136,8 +136,8 @@ Below is a complete block diagram of the algorithm for obtaining speed and displ
 ![Block diagram](./img/blokowycaloscang.jpg)
 
 <a name="androidp"></a>
-## Android program
-For the needs of the project, a program for Android phones was written.
+## Android application
+For the needs of the project, a application for Android phones was written.
 
 Functional requirements:
 * processing of data collected from the sensors so as to obtain the value of displacement and speed of the device
@@ -182,7 +182,7 @@ The device was tested by attaching it to a robot arm that moved a given distance
   <img src="./img/testst.jpg" width="270" alt="Testing"/>
 </p>
 
-The average error was quite large ~12% probably could be smaller if more expensive sensors would be used. I paid for that one ~2$.
+The average error was quite large (~12%) - probably could be smaller if more expensive sensors had been used. I paid for that one ~2$.
 
 <a name="contact"></a>
 ## Contact
