@@ -61,7 +61,6 @@ to
 const int16_t tX[3] = {1,  0,  0};
 const int16_t tY[3] = {0,  1,  0};
 ```
-I have made already pull request on this topic.
 
 You should also enter acceleration of gravity appropriate to the place where you are.
 
