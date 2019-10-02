@@ -1,4 +1,4 @@
-# Measurement of speed and displacement using an accelerometer and gyroscope
+# Measurement of speed and displacement using an accelerometer and gyroscope - IMU
 > The device was created to measure training parameters in powerlifting.
 
 ## Table of contents
